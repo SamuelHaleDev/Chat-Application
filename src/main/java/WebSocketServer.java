@@ -9,7 +9,9 @@ public class WebSocketServer {
     private static final Logger logger = LogManager.getLogger(WebSocketServer.class);
 
     public static void main(String[] args) {
-        org.glassfish.tyrus.server.Server server = new org.glassfish.tyrus.server.Server("localhost", 8080, "/ws", ChatServerEndpoint.class);
+        Set<Class<?>> classes = new HashSet<>();
+        classes.add(ChatServerEndpoint.class);
+        org.glassfish.tyrus.server.Server server = new org.glassfish.tyrus.server.Server("localhost", 8080, "/ws", null, classes);
 
         try {
             server.start();
