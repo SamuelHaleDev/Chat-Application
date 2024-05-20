@@ -17,7 +17,7 @@ public class ChatServerEndpoint {
         try {
             session.getBasicRemote().sendText("Connection established!");
         } catch (IOException e) {
-            logger.error("Error sending message to client: " + e.getMessage());
+            logger.error("Error sending message to client: {}", e.getMessage());
         }
     }
 
@@ -27,7 +27,7 @@ public class ChatServerEndpoint {
         try {
             session.getBasicRemote().sendText("Server received: " + message);
         } catch (IOException e) {
-            logger.error("Error sending message to client: " + e.getMessage());
+            logger.error("Error sending message to client: {}", e.getMessage());
         }
     }
 
