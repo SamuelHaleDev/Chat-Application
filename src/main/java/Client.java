@@ -18,9 +18,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Client extends JFrame {
+    private ChatClientEndpoint chatClientEndpoint;
     private static final Logger logger = LogManager.getLogger(Client.class);
     private static JTextField usernameField;
     private static JButton connectButton;
+    private static String username;
 
     public Client() {
         setTitle("WhatsChat");
@@ -50,7 +52,7 @@ public class Client extends JFrame {
 
     public void connect() {
         // Get the username from the text field
-        String username = usernameField.getText();
+        username = usernameField.getText();
 
         // Create a WebSocket container
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
@@ -61,7 +63,8 @@ public class Client extends JFrame {
         // Create a new instance of the Client.ChatClientEndpoint and
             // connect to the server
         try {
-            Session session = container.connectToServer(ChatClientEndpoint.class, uri);
+            container.connectToServer(ChatClientEndpoint.class, uri);
+            chatClientEndpoint = ChatClientEndpoint.getInstance();
 
             // After connecting, hide the username field and connect button
             usernameField.setVisible(false);
@@ -103,6 +106,11 @@ public class Client extends JFrame {
         // Footer Panel with text field and send button
         JTextField messageField = new JTextField(20);
         JButton sendButton = new JButton("Send");
+        sendButton.addActionListener(e -> {
+            String message = messageField.getText();
+            chatClientEndpoint.sendMessage(username, message);
+            messageField.setText("");
+        });
         JPanel footerPanel = new JPanel(new BorderLayout());
         footerPanel.add(messageField, BorderLayout.CENTER);
         footerPanel.add(sendButton, BorderLayout.EAST);
