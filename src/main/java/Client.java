@@ -21,7 +21,7 @@ public class Client extends JFrame {
     private ChatClientEndpoint chatClientEndpoint;
     private static final Logger logger = LogManager.getLogger(Client.class);
     private static JTextField usernameField;
-    private static JButton connectButton;
+    private JTextArea chatArea;
     private static String username;
 
     public Client() {
@@ -33,7 +33,7 @@ public class Client extends JFrame {
         // Initialize the username field and connect button
         usernameField = new JTextField(20);
         usernameField.setText("Enter your username");
-        connectButton = new JButton("Connect");
+        JButton connectButton = new JButton("Connect");
 
         // Add an action listener to the connect button
         connectButton.addActionListener(e -> connect());
@@ -63,23 +63,14 @@ public class Client extends JFrame {
         // Create a new instance of the Client.ChatClientEndpoint and
             // connect to the server
         try {
-            container.connectToServer(ChatClientEndpoint.class, uri);
+            container.connectToServer(new ChatClientEndpoint(this), uri);
             chatClientEndpoint = ChatClientEndpoint.getInstance();
-
-            // After connecting, hide the username field and connect button
-            usernameField.setVisible(false);
-            connectButton.setVisible(false);
 
             // Call the displayChatRoom method to display the chat room
             displayChatRoom();
         } catch (DeploymentException | IOException e) {
             logger.error("Error connecting to server: {}", e.getMessage());
         }
-
-        // After connecting, hide the username field and connect
-            // button
-        usernameField.setVisible(false);
-        connectButton.setVisible(false);
     }
 
     public void displayChatRoom() {
@@ -88,18 +79,13 @@ public class Client extends JFrame {
 
         // Header panel with back button and header label
         JButton backButton = new JButton("\u2190");
-        backButton.addActionListener(e -> {
-            // Show the username field and connect button
-            usernameField.setVisible(true);
-            connectButton.setVisible(true);
-        });
         JLabel header = new JLabel("Chat Room", SwingConstants.CENTER);
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.add(backButton, BorderLayout.WEST);
         headerPanel.add(header, BorderLayout.CENTER);
 
         // Chat Room Panel
-        JTextArea chatArea = new JTextArea();
+        chatArea = new JTextArea();
         chatArea.setEditable(false);
         JScrollPane chatScrollPane = new JScrollPane(chatArea);
 
@@ -129,6 +115,10 @@ public class Client extends JFrame {
 
         revalidate();
         repaint();
+    }
+
+    public void displayMessage(String message) {
+        chatArea.append(message + "\n");
     }
 
     public static void main(String[] args) {
