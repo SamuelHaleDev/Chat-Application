@@ -42,8 +42,9 @@ public class ChatServerEndpoint {
         switch (command) {
             case "MESSAGE":
                 response = processChatMessage(content);
+
                 // Broadcast the message to all connected clients
-                broadcast(response.replaceFirst("MESSAGE", "BMESSAGE"), session);
+                broadcast(content, session);
                 System.out.println("S| Sending message to " + session.getId() + ": " + response);
                 break;
             default:
@@ -60,8 +61,18 @@ public class ChatServerEndpoint {
         // Process the chat message...
         logger.info("S| Processing chat message: {}", message);
 
+        String processedMessage = message.replaceFirst("^.*?: ", "You: ");
+
         // Return the message
-        return "MESSAGE " + System.currentTimeMillis() + ": " + message;
+        return "MESSAGE " + System.currentTimeMillis() + ": " + processedMessage;
+    }
+
+    private String processBChatMessage(String message) {
+        // Process the chat message...
+        logger.info("S| Processing chat message: {}", message);
+
+        // Return the message
+        return "BMESSAGE " + System.currentTimeMillis() + ": " + message;
     }
 
     @OnClose
@@ -71,12 +82,13 @@ public class ChatServerEndpoint {
     }
 
     private void broadcast(String message, Session senderSession) {
+        String bMessage = processBChatMessage(message);
         for (Session session : sessions) {
             if (session.equals(senderSession)) {
                 continue;
             }
             try {
-                session.getBasicRemote().sendText(message);
+                session.getBasicRemote().sendText(bMessage);
             } catch (IOException e) {
                 logger.error("S| Error sending message to client: {}", e.getMessage());
             }

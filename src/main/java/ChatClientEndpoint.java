@@ -42,6 +42,9 @@ public class ChatClientEndpoint {
             case "MESSAGE":
                 client.displayMessage(content);
                 break;
+            case "BMESSAGE":
+                client.displayMessage(content);
+                break;
             default:
                 System.out.println("C| Unknown command: " + command);
         }
