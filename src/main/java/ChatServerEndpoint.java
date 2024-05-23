@@ -4,7 +4,9 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.logging.log4j.LogManager;
@@ -14,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 public class ChatServerEndpoint {
     private static final Logger logger = LogManager.getLogger(ChatServerEndpoint.class);
     private static final Set<Session> sessions = new CopyOnWriteArraySet<>();
+    private static final Map<String, ChatRoom> chatRooms = new ConcurrentHashMap<>();
 
     @OnOpen
     public void onOpen(Session session) {
@@ -28,7 +31,7 @@ public class ChatServerEndpoint {
 
     // Handle all incoming messages from Client here
     @OnMessage
-    public void onMessage(String message, Session session) {
+    public void onMessage(String message, Session session) throws IOException {
         String response = "";
 
         System.out.println("S| Message received from " + session.getId() + ": " + message);
@@ -36,7 +39,7 @@ public class ChatServerEndpoint {
         // Split the message into the command and the content
         String[] parts = message.split(" ", 2);
         String command = parts[0];
-        String content = parts[1];
+        String content = parts.length > 1 ? parts[1] : "";
 
         // Handle the command
         switch (command) {
@@ -46,6 +49,19 @@ public class ChatServerEndpoint {
                 // Broadcast the message to all connected clients
                 broadcast(content, session);
                 System.out.println("S| Sending message to " + session.getId() + ": " + response);
+                break;
+            case "CREATE":
+                String chatRoomName = content;
+                ChatRoom chatRoom = chatRooms.get(chatRoomName);
+                if (chatRoom == null) {
+                    chatRoom = new ChatRoom(chatRoomName);
+                    chatRoom.subscribe(session);
+                    chatRooms.put(chatRoomName, chatRoom);
+                    session.getBasicRemote().sendText("CREATE " + chatRoomName + " successful");
+                    session.getBasicRemote().sendText("SUBSCRIBE " + chatRoomName + " successful");
+                } else {
+                    session.getBasicRemote().sendText("CREATE " + chatRoomName + " failed: Chat room already exists");
+                }
                 break;
             default:
                 System.out.println("S| Unknown command: " + command);

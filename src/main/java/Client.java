@@ -31,7 +31,8 @@ public class Client extends JFrame {
         setSize(300, 200);
         setLocationRelativeTo(null);
 
-        chatRoomList = new JList<>();
+        DefaultListModel<String> model = new DefaultListModel<>();
+        chatRoomList = new JList<>(model);
 
         // Initialize the username field and connect button
         usernameField = new JTextField(20);
@@ -83,6 +84,36 @@ public class Client extends JFrame {
         // Header panel with header label and a "+" button
         JLabel header = new JLabel("Subscribed Chat Rooms", SwingConstants.CENTER);
         JButton addButton = new JButton("+");
+        addButton.addActionListener(e -> {
+            JTextField chatRoomNameField = new JTextField(20);
+            JButton createButton = new JButton("Create");
+            createButton.addActionListener(e1 -> {
+                String chatRoomName = chatRoomNameField.getText();
+                // Add code here to process communication for chatroom creation
+                chatClientEndpoint.createChatRoom(chatRoomName);
+
+                // Show a confirmation dialog
+                JOptionPane.showMessageDialog(null, "Chat room '" + chatRoomName + "' created successfully!");
+
+                Window dialog = SwingUtilities.windowForComponent((Component) e1.getSource());
+                if (dialog != null) {
+                    dialog.dispose();
+                }
+            });
+
+            JPanel formPanel = new JPanel();
+            formPanel.add(chatRoomNameField);
+            formPanel.add(createButton);
+
+            JDialog dialog = new JDialog();
+            dialog.setModal(true);
+            dialog.setTitle("Create a new chat room");
+            dialog.setContentPane(formPanel);
+            dialog.pack();
+            dialog.setLocationRelativeTo(null);
+            dialog.setVisible(true);
+        });
+
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.add(header, BorderLayout.CENTER);
         headerPanel.add(addButton, BorderLayout.EAST);
@@ -153,6 +184,11 @@ public class Client extends JFrame {
 
         revalidate();
         repaint();
+    }
+
+    public void addChatRoom(String chatRoomName) {
+        DefaultListModel<String> model = (DefaultListModel<String>) chatRoomList.getModel();
+        model.addElement(chatRoomName);
     }
 
     public void displayMessage(String message) {
