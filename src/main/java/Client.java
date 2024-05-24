@@ -25,6 +25,7 @@ public class Client extends JFrame {
     private static String username;
     private JList<String> chatRoomList;
     private JTabbedPane tabbedPane;
+    private JList<String> discoveryChatRooms;
 
     public Client() {
         setTitle("WhatsChat");
@@ -34,6 +35,7 @@ public class Client extends JFrame {
 
         DefaultListModel<String> model = new DefaultListModel<>();
         chatRoomList = new JList<>(model);
+        discoveryChatRooms = new JList<>(new DefaultListModel<>());
 
         // Initialize the username field and connect button
         usernameField = new JTextField(20);
@@ -109,6 +111,7 @@ public class Client extends JFrame {
         JButton refreshButton = new JButton("Refresh");
         refreshButton.addActionListener(e -> {
             // Add code here to process communication for chatroom discovery
+            chatClientEndpoint.getChatRooms();
         });
 
         JPanel headerPanel = new JPanel(new BorderLayout());
@@ -116,10 +119,10 @@ public class Client extends JFrame {
         headerPanel.add(refreshButton, BorderLayout.EAST);
 
         // Chat Room List Panel
-        JScrollPane chatRoomScrollPane = new JScrollPane(chatRoomList);
-        chatRoomList.addListSelectionListener(e -> {
+        JScrollPane chatRoomScrollPane = new JScrollPane(discoveryChatRooms);
+        discoveryChatRooms.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                String selectedChatRoom = chatRoomList.getSelectedValue();
+                String selectedChatRoom = discoveryChatRooms.getSelectedValue();
                 //displayChatRoom(selectedChatRoom);
             }
         });
@@ -128,6 +131,9 @@ public class Client extends JFrame {
         panel.setLayout(new BorderLayout());
         panel.add(headerPanel, BorderLayout.NORTH);
         panel.add(chatRoomScrollPane, BorderLayout.CENTER);
+
+        // Request the server for the list of chat rooms
+        chatClientEndpoint.getChatRooms();
 
         revalidate();
         repaint();
@@ -240,6 +246,10 @@ public class Client extends JFrame {
     public void addChatRoom(String chatRoomName) {
         DefaultListModel<String> model = (DefaultListModel<String>) chatRoomList.getModel();
         model.addElement(chatRoomName);
+    }
+
+    public JList<String> getDiscoveryChatRooms() {
+        return discoveryChatRooms;
     }
 
     public void displayMessage(String message) {

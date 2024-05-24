@@ -34,4 +34,9 @@ public class ChatRoom {
     public String getName() {
         return name;
     }
+
+    // getSubscribers
+    public Set<Session> getSubscribers() {
+        return subscribers;
+    }
 }
