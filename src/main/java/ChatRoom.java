@@ -17,6 +17,9 @@ public class ChatRoom {
     public void subscribe(Session session) {
         subscribers.add(session);
     }
+    public void unsubscribe(Session session) {
+        subscribers.remove(session);
+    }
 
     public void publish(String message, Session senderSession) throws IOException {
         messageHistory.add(message);

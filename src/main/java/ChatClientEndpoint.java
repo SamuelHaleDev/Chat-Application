@@ -60,6 +60,16 @@ public class ChatClientEndpoint {
         }
     }
 
+    public void leaveChatRoom(String chatRoomName) {
+        String formattedMessage = "UNSUBSCRIBE " + chatRoomName;
+        System.out.println("C| Sending message to server: " + formattedMessage);
+        try {
+            session.getBasicRemote().sendText(formattedMessage);
+        } catch (Exception e) {
+            System.out.println("C| Error sending message: " + e.getMessage());
+        }
+    }
+
     // Handle all incoming messages from Server here
     @OnMessage
     public void onMessage(String message) {
@@ -82,6 +92,11 @@ public class ChatClientEndpoint {
                 // Extract the chat room name from content
                 String chatRoomName = content.replaceFirst(" successful", "");
                 client.addChatRoom(chatRoomName);
+                break;
+            case "UNSUBSCRIBE":
+                // Extract the chat room name from content
+                String chatRoomName2 = content.replaceFirst(" successful", "");
+                client.removeChatRoom(chatRoomName2);
                 break;
             case "CREATE":
                 System.out.println("C| " + content);

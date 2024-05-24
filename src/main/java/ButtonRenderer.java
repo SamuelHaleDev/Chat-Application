@@ -48,11 +48,19 @@ class ButtonEditor extends DefaultCellEditor {
             // Get the chat room name from the first column of the current row
             String chatRoomName = table.getModel().getValueAt(row, 0).toString();
 
-            // Add code here to process joining the chat room
-            chatClientEndpoint.joinChatRoom(chatRoomName);
+            if (label.equals("Join")) {
+                // Join the chat room
+                chatClientEndpoint.joinChatRoom(chatRoomName);
 
-            // Show a confirmation dialog
-            JOptionPane.showMessageDialog(null, "Joined chat room '" + chatRoomName + "' successfully!");
+                // Show a confirmation dialog
+                JOptionPane.showMessageDialog(null, "Joined chat room '" + chatRoomName + "' successfully!");
+            } else if (label.equals("Leave")) {
+                // Leave the chat room
+                chatClientEndpoint.leaveChatRoom(chatRoomName);
+
+                // Show a confirmation dialog
+                JOptionPane.showMessageDialog(null, "Left chat room '" + chatRoomName + "' successfully!");
+            }
         });
 
         return button;

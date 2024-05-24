@@ -60,6 +60,8 @@ public class ChatServerEndpoint {
             case "SUBSCRIBE":
                 response = processSubcribeChatRoom(content, session);
                 break;
+            case "UNSUBSCRIBE":
+                break;
             default:
                 System.out.println("S| Unknown command: " + command);
         }
@@ -68,6 +70,21 @@ public class ChatServerEndpoint {
         } catch (IOException e) {
             logger.error("S| Error sending message to client: {}", e.getMessage());
         }
+    }
+
+    private String processUnsubscribeChatRoom(String chatRoomName, Session session) {
+        // Process the chat room unsubscription...
+        logger.info("S| Processing chat room unsubscription: {}", chatRoomName);
+
+        // Get the chat room
+        ChatRoom chatRoom = chatRooms.get(chatRoomName);
+        if (chatRoom != null) {
+            chatRoom.unsubscribe(session);
+            return "UNSUBSCRIBE " + chatRoomName + " successful";
+        }
+
+        // Return error message
+        return "UNSUBSCRIBE " + chatRoomName + " failed";
     }
 
     private String processSubcribeChatRoom(String chatRoomName, Session session) {
