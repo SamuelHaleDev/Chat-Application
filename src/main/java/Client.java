@@ -10,6 +10,7 @@
 * Copyright (c) 2024 by Samuel Hale
 * */
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.websocket.*;
 import java.awt.*;
 import java.io.IOException;
@@ -106,26 +107,39 @@ public class Client extends JFrame {
 
         panel.removeAll();
 
+        // Chat Room Table Panel
+        DefaultTableModel tableModel = new DefaultTableModel();
+        tableModel.addColumn("Chat Room");
+        tableModel.addColumn("");
+
+        DefaultListModel<String> model = (DefaultListModel<String>) discoveryChatRooms.getModel();
+        for (int i = 0; i < model.getSize(); i++) {
+            tableModel.addRow(new Object[]{model.getElementAt(i), "Join"});
+        }
+
+        JTable chatRoomTable = new JTable(tableModel);
+        chatRoomTable.getColumn("").setCellRenderer(new ButtonRenderer());
+        chatRoomTable.getColumn("").setCellEditor(new ButtonEditor(new JCheckBox(), discoveryChatRooms, this.chatClientEndpoint));
+        JScrollPane chatRoomScrollPane = new JScrollPane(chatRoomTable);
+
         // Header panel with a header label and a "Refresh" button
         JLabel header = new JLabel("Discover Chat Rooms", SwingConstants.CENTER);
         JButton refreshButton = new JButton("Refresh");
         refreshButton.addActionListener(e -> {
             // Add code here to process communication for chatroom discovery
-            chatClientEndpoint.getChatRooms();
+            if (chatClientEndpoint == null) {
+                System.out.println("Chat client endpoint is null");
+            } else {
+                chatClientEndpoint.getChatRooms(() -> {
+                    // Refresh the table
+                    updateTable(tableModel);
+                });
+            }
         });
 
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.add(header, BorderLayout.CENTER);
         headerPanel.add(refreshButton, BorderLayout.EAST);
-
-        // Chat Room List Panel
-        JScrollPane chatRoomScrollPane = new JScrollPane(discoveryChatRooms);
-        discoveryChatRooms.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                String selectedChatRoom = discoveryChatRooms.getSelectedValue();
-                //displayChatRoom(selectedChatRoom);
-            }
-        });
 
         // Add components to the passed panel
         panel.setLayout(new BorderLayout());
@@ -133,7 +147,11 @@ public class Client extends JFrame {
         panel.add(chatRoomScrollPane, BorderLayout.CENTER);
 
         // Request the server for the list of chat rooms
-        chatClientEndpoint.getChatRooms();
+        chatClientEndpoint.getChatRooms(() -> {
+            // Refresh the table
+            updateTable(tableModel);
+        });
+
 
         revalidate();
         repaint();
@@ -197,6 +215,21 @@ public class Client extends JFrame {
 
         revalidate();
         repaint();
+    }
+
+    public void updateTable(DefaultTableModel tableModel) {
+        System.out.println("Updating table");
+
+        // Clear the existing rows
+        tableModel.setRowCount(0);
+
+        // Get the updated chat room names
+        DefaultListModel<String> model = (DefaultListModel<String>) discoveryChatRooms.getModel();
+
+        // Add each chat room name to the table model
+        for (int i = 0; i < model.getSize(); i++) {
+            tableModel.addRow(new Object[]{model.getElementAt(i), "Join"});
+        }
     }
 
     public void displayChatRoom() {

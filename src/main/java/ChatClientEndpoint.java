@@ -6,6 +6,7 @@ public class ChatClientEndpoint {
     private static ChatClientEndpoint instance;
     private Client client;
     private Session session;
+    private Runnable getChatRoomsCallback;
 
     public ChatClientEndpoint(Client client) {
         this.client = client;
@@ -38,8 +39,19 @@ public class ChatClientEndpoint {
         }
     }
 
-    public void getChatRooms() {
+    public void getChatRooms(Runnable callback) {
         String formattedMessage = "GET_CHATROOMS ";
+        System.out.println("C| Sending message to server: " + formattedMessage);
+        try {
+            session.getBasicRemote().sendText(formattedMessage);
+            this.getChatRoomsCallback = callback;
+        } catch (Exception e) {
+            System.out.println("C| Error sending message: " + e.getMessage());
+        }
+    }
+
+    public void joinChatRoom(String chatRoomName) {
+        String formattedMessage = "SUBSCRIBE " + chatRoomName;
         System.out.println("C| Sending message to server: " + formattedMessage);
         try {
             session.getBasicRemote().sendText(formattedMessage);
@@ -88,6 +100,12 @@ public class ChatClientEndpoint {
                 // Add each chat room name to the discoveryChatRooms model
                 for (String name: chatRoomNames) {
                     model.addElement(name);
+                }
+
+                if (this.getChatRoomsCallback == null) {
+                    System.out.println("C| getChatRoomsCallback is null");
+                } else {
+                    this.getChatRoomsCallback.run();
                 }
                 break;
             default:
