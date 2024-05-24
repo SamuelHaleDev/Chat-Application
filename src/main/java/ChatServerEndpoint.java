@@ -53,10 +53,12 @@ public class ChatServerEndpoint {
                 break;
             case "CREATE":
                 response = processCreateChatRoom(content, session);
-
                 break;
             case "GET_CHATROOMS":
                 response = processGetChatRooms(session);
+                break;
+            case "SUBSCRIBE":
+                response = processSubcribeChatRoom(content, session);
                 break;
             default:
                 System.out.println("S| Unknown command: " + command);
@@ -66,6 +68,21 @@ public class ChatServerEndpoint {
         } catch (IOException e) {
             logger.error("S| Error sending message to client: {}", e.getMessage());
         }
+    }
+
+    private String processSubcribeChatRoom(String chatRoomName, Session session) {
+        // Process the chat room subscription...
+        logger.info("S| Processing chat room subscription: {}", chatRoomName);
+
+        // Get the chat room
+        ChatRoom chatRoom = chatRooms.get(chatRoomName);
+        if (chatRoom != null) {
+            chatRoom.subscribe(session);
+            return "SUBSCRIBE " + chatRoomName + " successful";
+        }
+
+        // Return error message
+        return "SUBSCRIBE " + chatRoomName + " failed";
     }
 
     private String processGetChatRooms(Session session) {
