@@ -51,17 +51,8 @@ public class ChatServerEndpoint {
                 System.out.println("S| Sending message to " + session.getId() + ": " + response);
                 break;
             case "CREATE":
-                String chatRoomName = content;
-                ChatRoom chatRoom = chatRooms.get(chatRoomName);
-                if (chatRoom == null) {
-                    chatRoom = new ChatRoom(chatRoomName);
-                    chatRoom.subscribe(session);
-                    chatRooms.put(chatRoomName, chatRoom);
-                    session.getBasicRemote().sendText("CREATE " + chatRoomName + " successful");
-                    session.getBasicRemote().sendText("SUBSCRIBE " + chatRoomName + " successful");
-                } else {
-                    session.getBasicRemote().sendText("CREATE " + chatRoomName + " failed: Chat room already exists");
-                }
+                response = processCreateChatRoom(content, session);
+
                 break;
             default:
                 System.out.println("S| Unknown command: " + command);
@@ -71,6 +62,24 @@ public class ChatServerEndpoint {
         } catch (IOException e) {
             logger.error("S| Error sending message to client: {}", e.getMessage());
         }
+    }
+
+    private String processCreateChatRoom(String chatRoomName, Session session) throws IOException {
+        // Process the chat room creation...
+        logger.info("S| Processing chat room creation: {}", chatRoomName);
+
+        // Create chatroom
+        ChatRoom chatRoom = chatRooms.get(chatRoomName);
+        if (chatRoom == null) {
+            chatRoom = new ChatRoom(chatRoomName);
+            chatRoom.subscribe(session);
+            chatRooms.put(chatRoomName, chatRoom);
+            session.getBasicRemote().sendText("SUBSCRIBE " + chatRoomName + " successful");
+            return "CREATE " + chatRoomName + " successful";
+        }
+
+        // Return error message
+        return "CREATE " + chatRoomName + " failed";
     }
 
     private String processChatMessage(String message) {
