@@ -24,6 +24,8 @@ public class Client extends JFrame {
     private JTextArea chatArea;
     private static String username;
     private JList<String> chatRoomList;
+    private JTabbedPane tabbedPane;
+    private JList<String> discoveryChatRooms;
 
     public Client() {
         setTitle("WhatsChat");
@@ -33,6 +35,7 @@ public class Client extends JFrame {
 
         DefaultListModel<String> model = new DefaultListModel<>();
         chatRoomList = new JList<>(model);
+        discoveryChatRooms = new JList<>(new DefaultListModel<>());
 
         // Initialize the username field and connect button
         usernameField = new JTextField(20);
@@ -70,16 +73,76 @@ public class Client extends JFrame {
             container.connectToServer(new ChatClientEndpoint(this), uri);
             chatClientEndpoint = ChatClientEndpoint.getInstance();
 
-            // Call the displayChatRoom method to display the chat room
-            displaySubscribedChatRooms();
+            // Initialize the navigation panel
+            initializeNavigationPanel();
+
         } catch (DeploymentException | IOException e) {
             logger.error("Error connecting to server: {}", e.getMessage());
         }
     }
 
-    public void displaySubscribedChatRooms() {
+    public void initializeNavigationPanel() {
+        tabbedPane = new JTabbedPane();
+
+        JPanel discoverPanel = new JPanel();
+        discoverPanel.setLayout(new BorderLayout());
+        displayDiscoveryPage(discoverPanel);
+        tabbedPane.addTab("Discover", discoverPanel);
+
+        JPanel chatroomsPanel = new JPanel();
+        chatroomsPanel.setLayout(new BorderLayout());
+        displaySubscribedChatRooms(chatroomsPanel);
+        tabbedPane.addTab("Chat Rooms", chatroomsPanel);
+
+        getContentPane().removeAll();
+        add(tabbedPane);
+        revalidate();
+        repaint();
+    }
+
+    public void displayDiscoveryPage(JPanel panel) {
         setSize(500, 500);
         setLocationRelativeTo(null);
+
+        panel.removeAll();
+
+        // Header panel with a header label and a "Refresh" button
+        JLabel header = new JLabel("Discover Chat Rooms", SwingConstants.CENTER);
+        JButton refreshButton = new JButton("Refresh");
+        refreshButton.addActionListener(e -> {
+            // Add code here to process communication for chatroom discovery
+            chatClientEndpoint.getChatRooms();
+        });
+
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.add(header, BorderLayout.CENTER);
+        headerPanel.add(refreshButton, BorderLayout.EAST);
+
+        // Chat Room List Panel
+        JScrollPane chatRoomScrollPane = new JScrollPane(discoveryChatRooms);
+        discoveryChatRooms.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                String selectedChatRoom = discoveryChatRooms.getSelectedValue();
+                //displayChatRoom(selectedChatRoom);
+            }
+        });
+
+        // Add components to the passed panel
+        panel.setLayout(new BorderLayout());
+        panel.add(headerPanel, BorderLayout.NORTH);
+        panel.add(chatRoomScrollPane, BorderLayout.CENTER);
+
+        // Request the server for the list of chat rooms
+        chatClientEndpoint.getChatRooms();
+
+        revalidate();
+        repaint();
+    }
+
+    public void displaySubscribedChatRooms(JPanel panel) {
+        setSize(500, 500);
+        setLocationRelativeTo(null);
+        panel.removeAll();
 
         // Header panel with header label and a "+" button
         JLabel header = new JLabel("Subscribed Chat Rooms", SwingConstants.CENTER);
@@ -127,16 +190,10 @@ public class Client extends JFrame {
             }
         });
 
-        // Main panel
-        JPanel panel = new JPanel();
+        // Add components to the passed panel
         panel.setLayout(new BorderLayout());
         panel.add(headerPanel, BorderLayout.NORTH);
         panel.add(chatRoomScrollPane, BorderLayout.CENTER);
-
-        // Remove all components from the frame
-        getContentPane().removeAll();
-
-        add(panel);
 
         revalidate();
         repaint();
@@ -189,6 +246,10 @@ public class Client extends JFrame {
     public void addChatRoom(String chatRoomName) {
         DefaultListModel<String> model = (DefaultListModel<String>) chatRoomList.getModel();
         model.addElement(chatRoomName);
+    }
+
+    public JList<String> getDiscoveryChatRooms() {
+        return discoveryChatRooms;
     }
 
     public void displayMessage(String message) {

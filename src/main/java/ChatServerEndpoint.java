@@ -4,6 +4,7 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.util.stream.Collectors;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,6 +55,9 @@ public class ChatServerEndpoint {
                 response = processCreateChatRoom(content, session);
 
                 break;
+            case "GET_CHATROOMS":
+                response = processGetChatRooms(session);
+                break;
             default:
                 System.out.println("S| Unknown command: " + command);
         }
@@ -62,6 +66,26 @@ public class ChatServerEndpoint {
         } catch (IOException e) {
             logger.error("S| Error sending message to client: {}", e.getMessage());
         }
+    }
+
+    private String processGetChatRooms(Session session) {
+        // Process the chat room retrieval...
+        logger.info("S| Processing chat room retrieval");
+
+        // Get the list of chat rooms
+        //Set<String> chatRoomNames = new HashSet<>(chatRooms.keySet());
+
+        // Get the chat rooms the user is subscribed to
+        Set<String> chatRoomNames = chatRooms.entrySet().stream()
+        .filter(entry -> !entry.getValue().getSubscribers().contains(session))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+
+        // Print the chatrooms for debugging purposes
+        chatRoomNames.forEach(chatRoomName -> logger.info("S| Chat room: {}", chatRoomName));
+
+        // Return the list of chat rooms
+        return "GET_CHATROOMS " + String.join(",", chatRoomNames);
     }
 
     private String processCreateChatRoom(String chatRoomName, Session session) throws IOException {
