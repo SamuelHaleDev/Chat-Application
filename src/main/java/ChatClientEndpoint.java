@@ -27,6 +27,16 @@ public class ChatClientEndpoint {
         }
     }
 
+    public void createChatRoom(String chatRoomName) {
+        String formattedMessage = "CREATE " + chatRoomName;
+        System.out.println("C| Sending message to server: " + formattedMessage);
+        try {
+            session.getBasicRemote().sendText(formattedMessage);
+        } catch (Exception e) {
+            System.out.println("C| Error sending message: " + e.getMessage());
+        }
+    }
+
     // Handle all incoming messages from Server here
     @OnMessage
     public void onMessage(String message) {
@@ -44,6 +54,17 @@ public class ChatClientEndpoint {
                 break;
             case "BMESSAGE":
                 client.displayMessage(content);
+                break;
+            case "SUBSCRIBE":
+                // Extract the chat room name from content
+                String chatRoomName = content.replaceFirst(" successful", "");
+                client.addChatRoom(chatRoomName);
+                break;
+            case "CREATE":
+                System.out.println("C| " + content);
+                break;
+            case "CONNECTION":
+                System.out.println("C| " + content);
                 break;
             default:
                 System.out.println("C| Unknown command: " + command);

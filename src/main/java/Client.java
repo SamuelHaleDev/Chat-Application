@@ -23,12 +23,16 @@ public class Client extends JFrame {
     private static JTextField usernameField;
     private JTextArea chatArea;
     private static String username;
+    private JList<String> chatRoomList;
 
     public Client() {
         setTitle("WhatsChat");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(300, 200);
         setLocationRelativeTo(null);
+
+        DefaultListModel<String> model = new DefaultListModel<>();
+        chatRoomList = new JList<>(model);
 
         // Initialize the username field and connect button
         usernameField = new JTextField(20);
@@ -67,10 +71,75 @@ public class Client extends JFrame {
             chatClientEndpoint = ChatClientEndpoint.getInstance();
 
             // Call the displayChatRoom method to display the chat room
-            displayChatRoom();
+            displaySubscribedChatRooms();
         } catch (DeploymentException | IOException e) {
             logger.error("Error connecting to server: {}", e.getMessage());
         }
+    }
+
+    public void displaySubscribedChatRooms() {
+        setSize(500, 500);
+        setLocationRelativeTo(null);
+
+        // Header panel with header label and a "+" button
+        JLabel header = new JLabel("Subscribed Chat Rooms", SwingConstants.CENTER);
+        JButton addButton = new JButton("+");
+        addButton.addActionListener(e -> {
+            JTextField chatRoomNameField = new JTextField(20);
+            JButton createButton = new JButton("Create");
+            createButton.addActionListener(e1 -> {
+                String chatRoomName = chatRoomNameField.getText();
+                // Add code here to process communication for chatroom creation
+                chatClientEndpoint.createChatRoom(chatRoomName);
+
+                // Show a confirmation dialog
+                JOptionPane.showMessageDialog(null, "Chat room '" + chatRoomName + "' created successfully!");
+
+                Window dialog = SwingUtilities.windowForComponent((Component) e1.getSource());
+                if (dialog != null) {
+                    dialog.dispose();
+                }
+            });
+
+            JPanel formPanel = new JPanel();
+            formPanel.add(chatRoomNameField);
+            formPanel.add(createButton);
+
+            JDialog dialog = new JDialog();
+            dialog.setModal(true);
+            dialog.setTitle("Create a new chat room");
+            dialog.setContentPane(formPanel);
+            dialog.pack();
+            dialog.setLocationRelativeTo(null);
+            dialog.setVisible(true);
+        });
+
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.add(header, BorderLayout.CENTER);
+        headerPanel.add(addButton, BorderLayout.EAST);
+
+        // Chat Room List Panel
+        JScrollPane chatRoomScrollPane = new JScrollPane(chatRoomList);
+        chatRoomList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                String selectedChatRoom = chatRoomList.getSelectedValue();
+                //displayChatRoom(selectedChatRoom);
+            }
+        });
+
+        // Main panel
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(headerPanel, BorderLayout.NORTH);
+        panel.add(chatRoomScrollPane, BorderLayout.CENTER);
+
+        // Remove all components from the frame
+        getContentPane().removeAll();
+
+        add(panel);
+
+        revalidate();
+        repaint();
     }
 
     public void displayChatRoom() {
@@ -115,6 +184,11 @@ public class Client extends JFrame {
 
         revalidate();
         repaint();
+    }
+
+    public void addChatRoom(String chatRoomName) {
+        DefaultListModel<String> model = (DefaultListModel<String>) chatRoomList.getModel();
+        model.addElement(chatRoomName);
     }
 
     public void displayMessage(String message) {
