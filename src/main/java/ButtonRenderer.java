@@ -60,6 +60,9 @@ class ButtonEditor extends DefaultCellEditor {
 
                 // Show a confirmation dialog
                 JOptionPane.showMessageDialog(null, "Left chat room '" + chatRoomName + "' successfully!");
+            } else {
+                // We are displaying a chatRoom if the button label is else
+                chatClientEndpoint.displayChatRoom(chatRoomName);
             }
         });
 

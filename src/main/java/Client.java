@@ -220,8 +220,11 @@ public class Client extends JFrame {
         }
 
         JTable chatRoomTable = new JTable(tableModel);
+        chatRoomTable.getColumn("Chat Room").setCellRenderer(new ButtonRenderer());
+        chatRoomTable.getColumn("Chat Room").setCellEditor(new ButtonEditor(new JCheckBox(), chatRoomList, this.chatClientEndpoint));
         chatRoomTable.getColumn("").setCellRenderer(new ButtonRenderer());
         chatRoomTable.getColumn("").setCellEditor(new ButtonEditor(new JCheckBox(), chatRoomList, this.chatClientEndpoint));
+
 
         JScrollPane chatRoomScrollPane = new JScrollPane(chatRoomTable);
 
@@ -249,13 +252,13 @@ public class Client extends JFrame {
         }
     }
 
-    public void displayChatRoom() {
+    public void displayChatRoom(String chatRoomName) {
         setSize(500, 500);
         setLocationRelativeTo(null);
 
         // Header panel with back button and header label
         JButton backButton = new JButton("\u2190");
-        JLabel header = new JLabel("Chat Room", SwingConstants.CENTER);
+        JLabel header = new JLabel(chatRoomName, SwingConstants.CENTER);
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.add(backButton, BorderLayout.WEST);
         headerPanel.add(header, BorderLayout.CENTER);
