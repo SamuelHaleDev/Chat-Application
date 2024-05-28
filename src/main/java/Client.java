@@ -274,7 +274,7 @@ public class Client extends JFrame {
         JButton sendButton = new JButton("Send");
         sendButton.addActionListener(e -> {
             String message = messageField.getText();
-            chatClientEndpoint.sendMessage(username, message);
+            chatClientEndpoint.sendMessage(chatRoomName, username, message);
             messageField.setText("");
         });
         JPanel footerPanel = new JPanel(new BorderLayout());

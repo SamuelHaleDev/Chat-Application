@@ -22,7 +22,9 @@ public class ChatRoom {
     }
 
     public void publish(String message, Session senderSession) throws IOException {
-        messageHistory.add(message);
+        messageHistory.add(message.replaceFirst("BMESSAGE ", ""));
+        // print message history
+        System.out.println("Message history: " + messageHistory);
         for (Session subscriber : subscribers) {
             if (subscriber != senderSession) {
                 subscriber.getBasicRemote().sendText(message);

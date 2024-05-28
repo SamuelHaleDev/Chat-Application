@@ -19,8 +19,8 @@ public class ChatClientEndpoint {
         instance = this;
     }
 
-    public void sendMessage(String username, String message) {
-        String formattedMessage = "MESSAGE " + username + ": " + message;
+    public void sendMessage(String chatRoomName, String username, String message) {
+        String formattedMessage = "MESSAGE " + chatRoomName + ":" + username + ":" + message;
         System.out.println("C| Sending message to server: " + formattedMessage);
         try {
             session.getBasicRemote().sendText(formattedMessage);
