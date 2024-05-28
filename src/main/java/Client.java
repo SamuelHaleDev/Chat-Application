@@ -274,7 +274,7 @@ public class Client extends JFrame {
         JButton sendButton = new JButton("Send");
         sendButton.addActionListener(e -> {
             String message = messageField.getText();
-            chatClientEndpoint.sendMessage(username, message);
+            chatClientEndpoint.sendMessage(chatRoomName, username, message);
             messageField.setText("");
         });
         JPanel footerPanel = new JPanel(new BorderLayout());
@@ -287,6 +287,13 @@ public class Client extends JFrame {
         panel.add(headerPanel, BorderLayout.NORTH);
         panel.add(chatScrollPane, BorderLayout.CENTER);
         panel.add(footerPanel, BorderLayout.SOUTH);
+
+        // Get chatroom history
+        chatClientEndpoint.getMessageHistory(chatRoomName, username, (String[] messages) -> {
+            for (String message : messages) {
+                chatArea.append(message + "\n");
+            }
+        });
 
         // Remove all components from the frame
         getContentPane().removeAll();

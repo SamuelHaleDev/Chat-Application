@@ -7,6 +7,7 @@ public class ChatClientEndpoint {
     private Client client;
     private Session session;
     private Runnable getChatRoomsCallback;
+    private MessageHistoryCallback getMessageHistoryCallback;
 
     public ChatClientEndpoint(Client client) {
         this.client = client;
@@ -19,8 +20,8 @@ public class ChatClientEndpoint {
         instance = this;
     }
 
-    public void sendMessage(String username, String message) {
-        String formattedMessage = "MESSAGE " + username + ": " + message;
+    public void sendMessage(String chatRoomName, String username, String message) {
+        String formattedMessage = "MESSAGE " + chatRoomName + ":" + username + ":" + message;
         System.out.println("C| Sending message to server: " + formattedMessage);
         try {
             session.getBasicRemote().sendText(formattedMessage);
@@ -72,6 +73,17 @@ public class ChatClientEndpoint {
 
     public void displayChatRoom(String chatRoomName) {
         client.displayChatRoom(chatRoomName);
+    }
+
+    public void getMessageHistory(String chatRoomName, String username, MessageHistoryCallback callback) {
+        String formattedMessage = "GET_HISTORY " + chatRoomName + ":" + username;
+        System.out.println("C| Sending message to server: " + formattedMessage);
+        try {
+            session.getBasicRemote().sendText(formattedMessage);
+            this.getMessageHistoryCallback = callback;
+        } catch (Exception e) {
+            System.out.println("C| Error sending message: " + e.getMessage());
+        }
     }
 
     // Handle all incoming messages from Server here
@@ -127,6 +139,13 @@ public class ChatClientEndpoint {
                     this.getChatRoomsCallback.run();
                 }
                 break;
+            case "GET_HISTORY":
+                System.out.println("C| " + content);
+                String[] messages = content.split(",");
+                if (this.getMessageHistoryCallback != null) {
+                    this.getMessageHistoryCallback.run(messages);
+                }
+                break;
             default:
                 System.out.println("C| Unknown command: " + command);
         }
@@ -144,5 +163,9 @@ public class ChatClientEndpoint {
 
     public static ChatClientEndpoint getInstance() {
         return instance;
+    }
+
+    public interface MessageHistoryCallback {
+        void run(String[] messages);
     }
 }

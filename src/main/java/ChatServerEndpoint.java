@@ -46,9 +46,8 @@ public class ChatServerEndpoint {
         switch (command) {
             case "MESSAGE":
                 response = processChatMessage(content);
+                processBChatMessage(content, session);
 
-                // Broadcast the message to all connected clients
-                broadcast(content, session);
                 System.out.println("S| Sending message to " + session.getId() + ": " + response);
                 break;
             case "CREATE":
@@ -63,6 +62,9 @@ public class ChatServerEndpoint {
             case "UNSUBSCRIBE":
                 response = processUnsubscribeChatRoom(content, session);
                 break;
+            case "GET_HISTORY":
+                response = processGetChatHistory(content);
+                break;
             default:
                 System.out.println("S| Unknown command: " + command);
         }
@@ -71,6 +73,28 @@ public class ChatServerEndpoint {
         } catch (IOException e) {
             logger.error("S| Error sending message to client: {}", e.getMessage());
         }
+    }
+
+    private String processGetChatHistory(String content) {
+        // Process the chat history retrieval...
+        logger.info("S| Processing chat history retrieval: {}", content);
+
+        // Split the content into two parts based on a ":" delimiter
+        String[] parts = content.split(":", 2);
+        String chatRoomName = parts[0];
+        String username = parts[1];
+
+        // Get the chat room
+        ChatRoom chatRoom = chatRooms.get(chatRoomName);
+        if (chatRoom != null) {
+            // Get the chat history
+            String chatHistory = chatRoom.getMessageHistory(username);
+            System.out.println("S| Chat history: " + chatHistory);
+            return "GET_HISTORY " + chatHistory;
+        }
+
+        // Return error message
+        return "GET_HISTORY " + chatRoomName + " failed";
     }
 
     private String processUnsubscribeChatRoom(String chatRoomName, Session session) {
@@ -149,15 +173,36 @@ public class ChatServerEndpoint {
         // Process the chat message...
         logger.info("S| Processing chat message: {}", message);
 
-        String processedMessage = message.replaceFirst("^.*?: ", "You: ");
+        // Split the message into three parts based on a ":" delimiter
+        String[] parts = message.split(":", 3);
+        String sender = "You: ";
+        String messageContent = parts[2];
+
+        String processedMessage = sender + messageContent;
 
         // Return the message
         return "MESSAGE " + System.currentTimeMillis() + ": " + processedMessage;
     }
 
-    private String processBChatMessage(String message) {
+    private String processBChatMessage(String message, Session session) throws IOException {
         // Process the chat message...
         logger.info("S| Processing chat message: {}", message);
+
+        // Split the message into three parts based on a ":" delimiter
+        String[] parts = message.split(":", 3);
+        String chatRoomName = parts[0];
+        String sender = parts[1];
+        String messageContent = parts[2];
+
+        String processedMessage = "BMESSAGE " + System.currentTimeMillis() + ": " + sender + ": " + messageContent;
+
+        // Get the chatRoom
+        ChatRoom chatRoom = chatRooms.get(chatRoomName);
+
+        // Publish the message to the chatRoom
+        chatRoom.publish(processedMessage, session);
+
+
 
         // Return the message
         return "BMESSAGE " + System.currentTimeMillis() + ": " + message;
@@ -169,17 +214,4 @@ public class ChatServerEndpoint {
         sessions.remove(session);
     }
 
-    private void broadcast(String message, Session senderSession) {
-        String bMessage = processBChatMessage(message);
-        for (Session session : sessions) {
-            if (session.equals(senderSession)) {
-                continue;
-            }
-            try {
-                session.getBasicRemote().sendText(bMessage);
-            } catch (IOException e) {
-                logger.error("S| Error sending message to client: {}", e.getMessage());
-            }
-        }
-    }
 }
