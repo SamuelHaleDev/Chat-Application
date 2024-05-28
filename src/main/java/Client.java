@@ -288,6 +288,13 @@ public class Client extends JFrame {
         panel.add(chatScrollPane, BorderLayout.CENTER);
         panel.add(footerPanel, BorderLayout.SOUTH);
 
+        // Get chatroom history
+        chatClientEndpoint.getMessageHistory(chatRoomName, username, (String[] messages) -> {
+            for (String message : messages) {
+                chatArea.append(message + "\n");
+            }
+        });
+
         // Remove all components from the frame
         getContentPane().removeAll();
 

@@ -62,6 +62,9 @@ public class ChatServerEndpoint {
             case "UNSUBSCRIBE":
                 response = processUnsubscribeChatRoom(content, session);
                 break;
+            case "GET_HISTORY":
+                response = processGetChatHistory(content);
+                break;
             default:
                 System.out.println("S| Unknown command: " + command);
         }
@@ -70,6 +73,28 @@ public class ChatServerEndpoint {
         } catch (IOException e) {
             logger.error("S| Error sending message to client: {}", e.getMessage());
         }
+    }
+
+    private String processGetChatHistory(String content) {
+        // Process the chat history retrieval...
+        logger.info("S| Processing chat history retrieval: {}", content);
+
+        // Split the content into two parts based on a ":" delimiter
+        String[] parts = content.split(":", 2);
+        String chatRoomName = parts[0];
+        String username = parts[1];
+
+        // Get the chat room
+        ChatRoom chatRoom = chatRooms.get(chatRoomName);
+        if (chatRoom != null) {
+            // Get the chat history
+            String chatHistory = chatRoom.getMessageHistory(username);
+            System.out.println("S| Chat history: " + chatHistory);
+            return "GET_HISTORY " + chatHistory;
+        }
+
+        // Return error message
+        return "GET_HISTORY " + chatRoomName + " failed";
     }
 
     private String processUnsubscribeChatRoom(String chatRoomName, Session session) {

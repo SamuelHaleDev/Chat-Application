@@ -32,8 +32,27 @@ public class ChatRoom {
         }
     }
 
-    public String getMessageHistory() {
-        return String.join("\n", messageHistory);
+    public String getMessageHistory(String username) {
+        // Create a temporary message history and initialize it to messageHistory
+        List<String> tempMessageHistory = new ArrayList<>(this.messageHistory);
+        // loop through message history
+        for (String message : tempMessageHistory) {
+            // Deassemble message
+            String[] parts = message.split(":", 3);
+
+            // Check if username == parts[1]
+            if (parts[1].replace(" ", "").contains(username)) {
+                parts[1] = " You";
+            }
+
+            // Reassemble message
+            String tempMessage = parts[0] + ":" + parts[1] + ":" + parts[2];
+
+            // Replace that message in messageHistory with new one
+            tempMessageHistory.set(tempMessageHistory.indexOf(message), tempMessage);
+        }
+
+        return String.join(",", tempMessageHistory);
     }
 
     public String getName() {
