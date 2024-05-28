@@ -70,6 +70,10 @@ public class ChatClientEndpoint {
         }
     }
 
+    public void displayChatRoom(String chatRoomName) {
+        client.displayChatRoom(chatRoomName);
+    }
+
     // Handle all incoming messages from Server here
     @OnMessage
     public void onMessage(String message) {
