@@ -68,8 +68,11 @@ class ButtonEditor extends DefaultCellEditor {
 
     public Object getCellEditorValue() {
         if (isPushed) {
-            // Join the chat room
-            String chatRoomName = discoveryChatRooms.getModel().getElementAt(row);
+            // Check if the row index is within the bounds of the discoveryChatRooms list
+            if (row >= 0 && row < discoveryChatRooms.getModel().getSize()) {
+                // Get the chat room name from the discoveryChatRooms list
+                String chatRoomName = discoveryChatRooms.getModel().getElementAt(row);
+            }
             // Add code here to join the chat room
         }
         isPushed = false;
