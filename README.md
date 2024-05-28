@@ -30,10 +30,10 @@
 <br />
 <div align="center">
   <a href="https://github.com/SamuelHaleDev/Chat-Application">
-    <img src="images/WhatsChat Logo.png" alt="Logo" width="80" height="80">
+    <img src="images/WhatsChat_Logo.png" alt="Logo" width="80" height="80">
   </a>
 
-<h3 align="center"><a href="https://Chat-Application-jwmk.onrender.com">Chat-Application</a></h3>
+<h3 align="center"><a href="https://example.com">Chat-Application</a></h3>
 
 
   <p align="center">
@@ -80,7 +80,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[![Product Name Screen Shot][product-screenshot]](https://example.com)
 I've wanted to tackle this project for a long time. I wanted to get used to the idea of a real-time application, which I've done before, but I believe the best way to demonstrate this is through a chat application. 
 I wanted to create something that allows multiple users to log in at the same time, communicate each other, and get results almost instantly.  
 This project is an attempt for me to become more familiar with that concept while also practicing the entire Software Development Life Cycle. Prior to beginning coding, I carefully considered and designed solutions to many challenges.
@@ -168,7 +168,7 @@ Project Link: [https://github.com/SamuelHaleDev/Chat-Application](https://github
 [issues-url]: https://github.com/SamuelHaleDev/Chat-Application/issues
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/samhale07
-[product-screenshot]: images/WhatsChat App Screenshot.png
+[product-screenshot]: images/WhatsChat_App_Screenshot.png
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [React-url]: https://reactjs.org/
 [Python Flask]: https://img.shields.io/badge/Python-Flask-4B8BBE?style=flat&logo=python&logoColor=white
