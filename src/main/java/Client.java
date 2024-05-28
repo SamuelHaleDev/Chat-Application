@@ -95,6 +95,16 @@ public class Client extends JFrame {
         displaySubscribedChatRooms(chatroomsPanel);
         tabbedPane.addTab("Chat Rooms", chatroomsPanel);
 
+        // Add a change listener to the tabbed pane
+        tabbedPane.addChangeListener(e -> {
+            int index = tabbedPane.getSelectedIndex();
+            if (index == 1) {
+                displaySubscribedChatRooms(chatroomsPanel);
+            } else {
+                displayDiscoveryPage(discoverPanel);
+            }
+        });
+
         getContentPane().removeAll();
         add(tabbedPane);
         revalidate();
@@ -199,14 +209,21 @@ public class Client extends JFrame {
         headerPanel.add(header, BorderLayout.CENTER);
         headerPanel.add(addButton, BorderLayout.EAST);
 
-        // Chat Room List Panel
-        JScrollPane chatRoomScrollPane = new JScrollPane(chatRoomList);
-        chatRoomList.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                String selectedChatRoom = chatRoomList.getSelectedValue();
-                //displayChatRoom(selectedChatRoom);
-            }
-        });
+        // Chat Room Table Panel
+        DefaultTableModel tableModel = new DefaultTableModel();
+        tableModel.addColumn("Chat Room");
+        tableModel.addColumn("");
+
+        DefaultListModel<String> model = (DefaultListModel<String>) chatRoomList.getModel();
+        for (int i = 0; i < model.getSize(); i++) {
+            tableModel.addRow(new Object[]{model.getElementAt(i), "Leave"});
+        }
+
+        JTable chatRoomTable = new JTable(tableModel);
+        chatRoomTable.getColumn("").setCellRenderer(new ButtonRenderer());
+        chatRoomTable.getColumn("").setCellEditor(new ButtonEditor(new JCheckBox(), chatRoomList, this.chatClientEndpoint));
+
+        JScrollPane chatRoomScrollPane = new JScrollPane(chatRoomTable);
 
         // Add components to the passed panel
         panel.setLayout(new BorderLayout());
@@ -279,6 +296,11 @@ public class Client extends JFrame {
     public void addChatRoom(String chatRoomName) {
         DefaultListModel<String> model = (DefaultListModel<String>) chatRoomList.getModel();
         model.addElement(chatRoomName);
+    }
+
+    public void removeChatRoom(String chatRoomName) {
+        DefaultListModel<String> model = (DefaultListModel<String>) chatRoomList.getModel();
+        model.removeElement(chatRoomName);
     }
 
     public JList<String> getDiscoveryChatRooms() {
