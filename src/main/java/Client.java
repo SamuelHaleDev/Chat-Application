@@ -258,6 +258,7 @@ public class Client extends JFrame {
 
         // Header panel with back button and header label
         JButton backButton = new JButton("\u2190");
+        backButton.addActionListener(e -> initializeNavigationPanel());
         JLabel header = new JLabel(chatRoomName, SwingConstants.CENTER);
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.add(backButton, BorderLayout.WEST);
