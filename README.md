@@ -80,8 +80,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]]
-
+[[![Product Name Screen Shot][product-screenshot]](https://example.com)
 I've wanted to tackle this project for a long time. I wanted to get used to the idea of a real-time application, which I've done before, but I believe the best way to demonstrate this is through a chat application. 
 I wanted to create something that allows multiple users to log in at the same time, communicate each other, and get results almost instantly.  
 This project is an attempt for me to become more familiar with that concept while also practicing the entire Software Development Life Cycle. Prior to beginning coding, I carefully considered and designed solutions to many challenges.
