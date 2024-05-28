@@ -61,6 +61,7 @@ public class ChatServerEndpoint {
                 response = processSubcribeChatRoom(content, session);
                 break;
             case "UNSUBSCRIBE":
+                response = processUnsubscribeChatRoom(content, session);
                 break;
             default:
                 System.out.println("S| Unknown command: " + command);
@@ -78,8 +79,12 @@ public class ChatServerEndpoint {
 
         // Get the chat room
         ChatRoom chatRoom = chatRooms.get(chatRoomName);
+        // print the chatRoom object
+        logger.info("S| Chat room: {}", chatRoom);
         if (chatRoom != null) {
             chatRoom.unsubscribe(session);
+            // log subscribers
+            chatRoom.getSubscribers().forEach(subscriber -> logger.info("S| Subscriber: {}", subscriber.getId()));
             return "UNSUBSCRIBE " + chatRoomName + " successful";
         }
 
