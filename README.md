@@ -83,15 +83,13 @@
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 I've wanted to tackle this project for a long time. I wanted to get used to the idea of a real-time application, which I've done before, but I believe the best way to demonstrate this is through a chat application. 
-I wanted to create something that allows multiple users to log in at the same time, communicate with each other, and get results almost instantly.  
-This project is an attempt for me to become more familiar with that concept while also practicing the entire Software Development Life Cycle. Prior to beginning coding, I carefully considered and designed solutions to many challenges.
-Along with developing automated JUnit testing. It's currently under progress, so it's not very nice right now, but in the end, this will be a chat program that I made and am proud of!
+I wanted to create something that allows multiple users to log in at the same time, communicate with each other, and get results almost instantly.  This project is an attempt for me to become more familiar with that concept while also practicing the entire Software Development Life Cycle. Prior to beginning coding, I carefully considered and designed solutions to many challenges. Along with developing automated JUnit testing. It's currently under progress, so it's not very nice right now, but in the end, this will be a chat program that I made and am proud of!
 
 Some of the challenges I want to address were
-What is a conversation? - This drives a huge aspect of the software as there are many different approaches to chatting apps.
-What are the Client-Server protocols? - I wanted to devise how the client and server would communicate and try to devise my initial idea of what protocols/ endpoints (loosely using this term) would be in place for things like messaging, chat room creation, joining etc. . .
-What is my concurrency strategy? - This one is super important to nail because JSwing is not thread safe and we don't want users to get held up by backend processing.
-What will the look and flow of the UI be? - This one is pretty standard for full stack. Having a sketch of your UI can help you visualize things like your event listeners, flow of activity.
+* What is a conversation? - This drives a huge aspect of the software as there are many different approaches to chatting apps.
+* What are the Client-Server protocols? - I wanted to devise how the client and server would communicate and try to devise my initial idea of what protocols/ endpoints (loosely using this term) would be in place for things like messaging, chat room creation, joining etc. . .
+* What is my concurrency strategy? - This one is super important to nail because JSwing is not thread safe and we don't want users to get held up by backend processing.
+* What will the look and flow of the UI be? - This one is pretty standard for full stack. Having a sketch of your UI can help you visualize things like your event listeners, flow of activity.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
