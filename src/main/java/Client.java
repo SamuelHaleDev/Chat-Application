@@ -57,8 +57,10 @@ public class Client extends JFrame {
                     usernameField.setText("Enter your username");
                 }
             }
-
         });
+
+        usernameField.addActionListener(e -> connect());
+
         JButton connectButton = new JButton("Connect");
 
         // Add an action listener to the connect button
