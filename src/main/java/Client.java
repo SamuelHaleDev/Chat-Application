@@ -210,7 +210,11 @@ public class Client extends JFrame {
                 if (dialog != null) {
                     dialog.dispose();
                 }
+
+                SwingUtilities.invokeLater(() -> displaySubscribedChatRooms(panel));
             });
+
+            chatRoomNameField.addActionListener(e1 -> createButton.doClick());
 
             JPanel formPanel = new JPanel();
             formPanel.add(chatRoomNameField);
