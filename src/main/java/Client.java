@@ -135,7 +135,6 @@ public class Client extends JFrame {
 
     public void displayDiscoveryPage(JPanel panel) {
         setSize(500, 500);
-        setLocationRelativeTo(null);
 
         panel.removeAll();
 
@@ -191,7 +190,6 @@ public class Client extends JFrame {
 
     public void displaySubscribedChatRooms(JPanel panel) {
         setSize(500, 500);
-        setLocationRelativeTo(null);
         panel.removeAll();
 
         // Header panel with header label and a "+" button
@@ -276,7 +274,6 @@ public class Client extends JFrame {
 
     public void displayChatRoom(String chatRoomName) {
         setSize(500, 500);
-        setLocationRelativeTo(null);
 
         // Header panel with back button and header label
         JButton backButton = new JButton("\u2190");
