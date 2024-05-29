@@ -13,6 +13,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.websocket.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.IOException;
@@ -156,7 +157,7 @@ public class Client extends JFrame {
         // Header panel with a header label and a "Refresh" button
         JLabel header = new JLabel("Discover Chat Rooms", SwingConstants.CENTER);
         JButton refreshButton = new JButton("Refresh");
-        refreshButton.addActionListener(e -> {
+        ActionListener refreshAction = e -> {
             // Add code here to process communication for chatroom discovery
             if (chatClientEndpoint == null) {
                 System.out.println("Chat client endpoint is null");
@@ -166,7 +167,11 @@ public class Client extends JFrame {
                     updateTable(tableModel);
                 });
             }
-        });
+        };
+        refreshButton.addActionListener(refreshAction);
+
+        Timer timer = new Timer(5000, refreshAction);
+        timer.start();
 
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.add(header, BorderLayout.CENTER);
