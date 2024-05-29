@@ -16,8 +16,8 @@ import org.apache.logging.log4j.Logger;
 @ServerEndpoint("/chat")
 public class ChatServerEndpoint {
     private static final Logger logger = LogManager.getLogger(ChatServerEndpoint.class);
-    private static final Set<Session> sessions = new CopyOnWriteArraySet<>();
-    private static final Map<String, ChatRoom> chatRooms = new ConcurrentHashMap<>();
+    private static Set<Session> sessions = new CopyOnWriteArraySet<>();
+    private static Map<String, ChatRoom> chatRooms = new ConcurrentHashMap<>();
 
     @OnOpen
     public void onOpen(Session session) {
@@ -135,17 +135,11 @@ public class ChatServerEndpoint {
         // Process the chat room retrieval...
         logger.info("S| Processing chat room retrieval");
 
-        // Get the list of chat rooms
-        //Set<String> chatRoomNames = new HashSet<>(chatRooms.keySet());
-
-        // Get the chat rooms the user is subscribed to
+        // Get the chat rooms the user is not subscribed to
         Set<String> chatRoomNames = chatRooms.entrySet().stream()
         .filter(entry -> !entry.getValue().getSubscribers().contains(session))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
-
-        // Print the chatrooms for debugging purposes
-        chatRoomNames.forEach(chatRoomName -> logger.info("S| Chat room: {}", chatRoomName));
 
         // Return the list of chat rooms
         return "GET_CHATROOMS " + String.join(",", chatRoomNames);
@@ -161,7 +155,6 @@ public class ChatServerEndpoint {
             chatRoom = new ChatRoom(chatRoomName);
             chatRoom.subscribe(session);
             chatRooms.put(chatRoomName, chatRoom);
-            session.getBasicRemote().sendText("SUBSCRIBE " + chatRoomName + " successful");
             return "CREATE " + chatRoomName + " successful";
         }
 
@@ -206,6 +199,22 @@ public class ChatServerEndpoint {
 
         // Return the message
         return "BMESSAGE " + System.currentTimeMillis() + ": " + message;
+    }
+
+    public static Map<String, ChatRoom> getChatRooms() {
+        return chatRooms;
+    }
+
+    public static Set<Session> getSessions() {
+        return sessions;
+    }
+
+    public void setChatRooms(Map<String, ChatRoom> chatRooms) {
+        this.chatRooms = chatRooms;
+    }
+
+    public void setSessions(Set<Session> sessions) {
+        this.sessions = sessions;
     }
 
     @OnClose
