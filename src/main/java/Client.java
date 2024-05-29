@@ -221,7 +221,7 @@ public class Client extends JFrame {
             dialog.setTitle("Create a new chat room");
             dialog.setContentPane(formPanel);
             dialog.pack();
-            dialog.setLocationRelativeTo(null);
+            dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);
         });
 
