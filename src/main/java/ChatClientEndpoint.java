@@ -75,6 +75,14 @@ public class ChatClientEndpoint {
         client.displayChatRoom(chatRoomName);
     }
 
+    public void displaySubscribedChatRooms(JPanel panel) {
+        client.displaySubscribedChatRooms(panel);
+    }
+
+    public void displayDiscoveryPage(JPanel panel) {
+        client.displayDiscoveryPage(panel);
+    }
+
     public void getMessageHistory(String chatRoomName, String username, MessageHistoryCallback callback) {
         String formattedMessage = "GET_HISTORY " + chatRoomName + ":" + username;
         System.out.println("C| Sending message to server: " + formattedMessage);
