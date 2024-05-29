@@ -155,6 +155,7 @@ public class ChatServerEndpoint {
             chatRoom = new ChatRoom(chatRoomName);
             chatRoom.subscribe(session);
             chatRooms.put(chatRoomName, chatRoom);
+            session.getBasicRemote().sendText("SUBSCRIBE " + chatRoomName + " successful");
             return "CREATE " + chatRoomName + " successful";
         }
 
