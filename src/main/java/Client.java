@@ -13,6 +13,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.websocket.*;
 import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.IOException;
 import java.net.URI;
 import org.apache.logging.log4j.LogManager;
@@ -41,6 +43,22 @@ public class Client extends JFrame {
         // Initialize the username field and connect button
         usernameField = new JTextField(20);
         usernameField.setText("Enter your username");
+        usernameField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (usernameField.getText().equals("Enter your username")) {
+                    usernameField.setText("");
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (usernameField.getText().isEmpty()) {
+                    usernameField.setText("Enter your username");
+                }
+            }
+
+        });
         JButton connectButton = new JButton("Connect");
 
         // Add an action listener to the connect button
@@ -56,6 +74,8 @@ public class Client extends JFrame {
         add(panel);
 
         setVisible(true);
+
+        connectButton.requestFocusInWindow();
     }
 
     public void connect() {
