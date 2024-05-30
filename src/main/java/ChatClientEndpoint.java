@@ -138,7 +138,9 @@ public class ChatClientEndpoint {
 
                 // Add each chat room name to the discoveryChatRooms model
                 for (String name: chatRoomNames) {
-                    model.addElement(name);
+                    if (!name.isEmpty()) {
+                        model.addElement(name);
+                    }
                 }
 
                 if (this.getChatRoomsCallback == null) {
