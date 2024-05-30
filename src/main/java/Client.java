@@ -11,6 +11,10 @@
 * */
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 import javax.websocket.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -31,7 +35,7 @@ public class Client extends JFrame {
     private ChatClientEndpoint chatClientEndpoint;
     private static final Logger logger = LogManager.getLogger(Client.class);
     private static JTextField usernameField;
-    private JTextArea chatArea;
+    private JTextPane chatArea;
     private static String username;
     private JList<String> chatRoomList;
     private JTabbedPane tabbedPane;
@@ -299,8 +303,9 @@ public class Client extends JFrame {
         headerPanel.add(header, BorderLayout.CENTER);
 
         // Chat Room Panel
-        chatArea = new JTextArea();
+        chatArea = new JTextPane();
         chatArea.setEditable(false);
+        chatArea.setContentType("text/html");
         JScrollPane chatScrollPane = new JScrollPane(chatArea);
 
         // Footer Panel with text field and send button
@@ -376,8 +381,19 @@ public class Client extends JFrame {
             clientTime = clientTime.substring(1);
         }
 
-        // Display chat message
-        chatArea.append(clientTime + " " + username + ": " + content + "\n");
+        String alignment = username.equals("You") ? "right" : "left";
+        String htmlText = "<html><body><p style=\"text-align: " + alignment + "\">" + clientTime + " " + username + ": " + content + "</p></body></html>";
+
+        HTMLEditorKit kit = (HTMLEditorKit) chatArea.getEditorKit();
+        HTMLDocument doc = (HTMLDocument) chatArea.getDocument();
+
+        try {
+            kit.insertHTML(doc, doc.getLength(), htmlText, 0, 0, null);
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /*
