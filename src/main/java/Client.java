@@ -118,25 +118,27 @@ public class Client extends JFrame {
     public void initializeNavigationPanel() {
         tabbedPane = new JTabbedPane();
 
-        JPanel discoverPanel = new JPanel();
-        discoverPanel.setLayout(new BorderLayout());
-        displayDiscoveryPage(discoverPanel);
-        tabbedPane.addTab("Discover", discoverPanel);
-
         JPanel chatroomsPanel = new JPanel();
         chatroomsPanel.setLayout(new BorderLayout());
         displaySubscribedChatRooms(chatroomsPanel);
         tabbedPane.addTab("Chat Rooms", chatroomsPanel);
 
+        JPanel discoverPanel = new JPanel();
+        discoverPanel.setLayout(new BorderLayout());
+        displayDiscoveryPage(discoverPanel);
+        tabbedPane.addTab("Discover", discoverPanel);
+
         // Add a change listener to the tabbed pane
         tabbedPane.addChangeListener(e -> {
             int index = tabbedPane.getSelectedIndex();
-            if (index == 1) {
+            if (index == 0) {
                 displaySubscribedChatRooms(chatroomsPanel);
             } else {
                 displayDiscoveryPage(discoverPanel);
             }
         });
+
+        tabbedPane.setSelectedIndex(0);
 
         getContentPane().removeAll();
         add(tabbedPane);
