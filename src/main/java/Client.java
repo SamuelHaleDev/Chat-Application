@@ -330,7 +330,9 @@ public class Client extends JFrame {
         // Get chatroom history
         chatClientEndpoint.getMessageHistory(chatRoomName, username, (String[] messages) -> {
             for (String message : messages) {
-                displayMessage(message);
+                if (!message.isEmpty()) {
+                    displayMessage(message);
+                }
             }
         });
 
@@ -363,6 +365,9 @@ public class Client extends JFrame {
         String tzandts = parts[1];
         String[] parts2 = parts[2].split(":", 3);
         String username = parts2[1].replace(" ", "");
+        if (username.equals(this.username)) {
+            username = "You";
+        }
         String content = parts2[2].replace(" ", "");
 
         String[] timeParts = tzandts.split(" ", 3);
@@ -381,8 +386,8 @@ public class Client extends JFrame {
             clientTime = clientTime.substring(1);
         }
 
-        String alignment = username.equals("You") ? "right" : "left";
-        String htmlText = "<html><body><p style=\"text-align: " + alignment + "\">" + clientTime + " " + username + ": " + content + "</p></body></html>";
+        String alignment = (username.equals("You") || username.equals(this.username)) ? "right" : "left";
+        String htmlText = "<p style=\"text-align: " + alignment + "\">" + clientTime + " " + username + ": " + content + "</p>";
 
         HTMLEditorKit kit = (HTMLEditorKit) chatArea.getEditorKit();
         HTMLDocument doc = (HTMLDocument) chatArea.getDocument();
