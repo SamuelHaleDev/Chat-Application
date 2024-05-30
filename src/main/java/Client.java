@@ -368,7 +368,7 @@ public class Client extends JFrame {
         if (username.equals(this.username)) {
             username = "You";
         }
-        String content = parts2[2].replace(" ", "");
+        String content = parts2[2].trim();
 
         String[] timeParts = tzandts.split(" ", 3);
         String timestamp = timeParts[0] + " " + timeParts[1];
