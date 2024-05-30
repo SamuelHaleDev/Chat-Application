@@ -19,7 +19,9 @@ import java.awt.event.FocusListener;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Instant;
+import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.apache.logging.log4j.LogManager;
@@ -323,7 +325,7 @@ public class Client extends JFrame {
         // Get chatroom history
         chatClientEndpoint.getMessageHistory(chatRoomName, username, (String[] messages) -> {
             for (String message : messages) {
-                chatArea.append(message + "\n");
+                displayMessage(message);
             }
         });
 
@@ -351,18 +353,62 @@ public class Client extends JFrame {
     }
 
     public void displayMessage(String message) {
-        String[] parts = message.split(" ", 2);
-        String timestamp = parts[0];
-        String content = parts[1];
+        // Extract the time and time zone from message that is in the format "[timestamp timezone]: username: message
+        String[] parts = message.split("[\\[\\]]", 3);
+        String tzandts = parts[1];
+        String[] parts2 = parts[2].split(":", 3);
+        String username = parts2[1].replace(" ", "");
+        String content = parts2[2].replace(" ", "");
 
+        String[] timeParts = tzandts.split(" ", 3);
+        String timestamp = timeParts[0] + " " + timeParts[1];
+        String timezone = timeParts[2];
 
-        Instant instant = Instant.ofEpochMilli(Long.parseLong(timestamp));
+        // Get clients time zone in GMT-00:00 format
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
+        String clientTimeZone = "GMT" + zdt.getOffset().toString();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a")
-                .withZone(ZoneId.systemDefault());
-        String userTime = formatter.format(instant);
+        // Server and client timezone are both in "GMT-00:00" format convert the timestamp to clients time zone
+        String clientTime = convertServerTimeToClientTime(timezone, clientTimeZone, timestamp);
 
-        chatArea.append(userTime + " " + content + "\n");
+        // If the clientTime has a leading 0 remove it e.g. "01:46" -> "1:46"
+        if (clientTime.startsWith("0")) {
+            clientTime = clientTime.substring(1);
+        }
+
+        // Display chat message
+        chatArea.append(clientTime + " " + username + ": " + content + "\n");
+    }
+
+    /*
+    *
+    * Purpose: Convert the server time to the client time zone
+    *
+    * serverTz: The server time zone in "GMT-00:00" format
+    * clientTz: The client time zone in "GMT-00:00" format
+    * serverTime: The server time in "hh:mm a" format
+    * */
+    String convertServerTimeToClientTime(String serverTz, String clientTz, String serverTime) {
+        // Parse the server time zone and client time zone
+        ZoneId serverZoneId = ZoneId.of(serverTz.replace("GMT", "UTC"));
+        ZoneId clientZoneId = ZoneId.of(clientTz.replace("GMT", "UTC"));
+
+        // Parse the server time
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
+        LocalTime localServerTime = LocalTime.parse(serverTime, timeFormatter);
+
+        // Create a ZonedDateTime object for the server time
+        ZonedDateTime serverZonedDateTime = ZonedDateTime.of(
+                1970, 1, 1, localServerTime.getHour(), localServerTime.getMinute(), 0, 0, serverZoneId
+        );
+
+        // Convert to the client time zone
+        ZonedDateTime clientZonedDateTime = serverZonedDateTime.withZoneSameInstant(clientZoneId);
+
+        // Format the client time
+        String clientTime = clientZonedDateTime.format(timeFormatter);
+
+        return clientTime;
     }
 
     public static void main(String[] args) {
