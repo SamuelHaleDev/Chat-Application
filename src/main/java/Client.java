@@ -387,7 +387,7 @@ public class Client extends JFrame {
         }
 
         String alignment = (username.equals("You") || username.equals(this.username)) ? "right" : "left";
-        String htmlText = "<p style=\"text-align: " + alignment + "\">" + clientTime + " " + username + ": " + content + "</p>";
+        String htmlText = "<div style=\"text-align: " + alignment + "\">" + clientTime + " " + username + ": " + content + "</div>";
 
         HTMLEditorKit kit = (HTMLEditorKit) chatArea.getEditorKit();
         HTMLDocument doc = (HTMLDocument) chatArea.getDocument();
