@@ -403,6 +403,8 @@ public class Client extends JFrame {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        chatArea.setCaretPosition(chatArea.getDocument().getLength());
     }
 
     /*
