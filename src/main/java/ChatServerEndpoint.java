@@ -4,6 +4,10 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 import java.util.Map;
 import java.util.Set;
@@ -155,6 +159,7 @@ public class ChatServerEndpoint {
             chatRoom = new ChatRoom(chatRoomName);
             chatRoom.subscribe(session);
             chatRooms.put(chatRoomName, chatRoom);
+            session.getBasicRemote().sendText("SUBSCRIBE " + chatRoomName + " successful");
             return "CREATE " + chatRoomName + " successful";
         }
 
@@ -168,13 +173,20 @@ public class ChatServerEndpoint {
 
         // Split the message into three parts based on a ":" delimiter
         String[] parts = message.split(":", 3);
+        String roomName = parts[0];
         String sender = "You: ";
         String messageContent = parts[2];
+
+        ZonedDateTime zdt = ZonedDateTime.now();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ZZZZ");
+
+        String formattedTime = "[" + formatter.format(zdt) + "]";
 
         String processedMessage = sender + messageContent;
 
         // Return the message
-        return "MESSAGE " + System.currentTimeMillis() + ": " + processedMessage;
+        return "MESSAGE " + formattedTime + ": " + roomName + ": " + processedMessage;
     }
 
     private String processBChatMessage(String message, Session session) throws IOException {
@@ -187,7 +199,13 @@ public class ChatServerEndpoint {
         String sender = parts[1];
         String messageContent = parts[2];
 
-        String processedMessage = "BMESSAGE " + System.currentTimeMillis() + ": " + sender + ": " + messageContent;
+        ZonedDateTime zdt = ZonedDateTime.now();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a ZZZZ");
+
+        String formattedTime = "[" + formatter.format(zdt) + "]";
+
+        String processedMessage = "BMESSAGE " + formattedTime + ": " + chatRoomName + ": " + sender + ": " + messageContent;
 
         // Get the chatRoom
         ChatRoom chatRoom = chatRooms.get(chatRoomName);

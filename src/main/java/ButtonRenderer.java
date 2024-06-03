@@ -52,14 +52,18 @@ class ButtonEditor extends DefaultCellEditor {
                 // Join the chat room
                 chatClientEndpoint.joinChatRoom(chatRoomName);
 
-                // Show a confirmation dialog
-                JOptionPane.showMessageDialog(null, "Joined chat room '" + chatRoomName + "' successfully!");
+                SwingUtilities.invokeLater(() -> {
+                    JPanel panel = (JPanel) SwingUtilities.getAncestorOfClass(JPanel.class, table);
+                    chatClientEndpoint.displayDiscoveryPage(panel);
+                });
             } else if (label.equals("Leave")) {
                 // Leave the chat room
                 chatClientEndpoint.leaveChatRoom(chatRoomName);
 
-                // Show a confirmation dialog
-                JOptionPane.showMessageDialog(null, "Left chat room '" + chatRoomName + "' successfully!");
+                SwingUtilities.invokeLater(() -> {
+                    JPanel panel = (JPanel) SwingUtilities.getAncestorOfClass(JPanel.class, table);
+                    chatClientEndpoint.displaySubscribedChatRooms(panel);
+                });
             } else {
                 // We are displaying a chatRoom if the button label is else
                 chatClientEndpoint.displayChatRoom(chatRoomName);

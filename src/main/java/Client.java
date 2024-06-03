@@ -11,10 +11,23 @@
 * */
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 import javax.websocket.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.IOException;
 import java.net.URI;
+import java.time.Instant;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,11 +35,12 @@ public class Client extends JFrame {
     private ChatClientEndpoint chatClientEndpoint;
     private static final Logger logger = LogManager.getLogger(Client.class);
     private static JTextField usernameField;
-    private JTextArea chatArea;
+    private JTextPane chatArea;
     private static String username;
     private JList<String> chatRoomList;
     private JTabbedPane tabbedPane;
     private JList<String> discoveryChatRooms;
+    private String currentChatRoom;
 
     public Client() {
         setTitle("WhatsChat");
@@ -41,6 +55,24 @@ public class Client extends JFrame {
         // Initialize the username field and connect button
         usernameField = new JTextField(20);
         usernameField.setText("Enter your username");
+        usernameField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (usernameField.getText().equals("Enter your username")) {
+                    usernameField.setText("");
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (usernameField.getText().isEmpty()) {
+                    usernameField.setText("Enter your username");
+                }
+            }
+        });
+
+        usernameField.addActionListener(e -> connect());
+
         JButton connectButton = new JButton("Connect");
 
         // Add an action listener to the connect button
@@ -56,6 +88,8 @@ public class Client extends JFrame {
         add(panel);
 
         setVisible(true);
+
+        connectButton.requestFocusInWindow();
     }
 
     public void connect() {
@@ -85,25 +119,27 @@ public class Client extends JFrame {
     public void initializeNavigationPanel() {
         tabbedPane = new JTabbedPane();
 
-        JPanel discoverPanel = new JPanel();
-        discoverPanel.setLayout(new BorderLayout());
-        displayDiscoveryPage(discoverPanel);
-        tabbedPane.addTab("Discover", discoverPanel);
-
         JPanel chatroomsPanel = new JPanel();
         chatroomsPanel.setLayout(new BorderLayout());
         displaySubscribedChatRooms(chatroomsPanel);
         tabbedPane.addTab("Chat Rooms", chatroomsPanel);
 
+        JPanel discoverPanel = new JPanel();
+        discoverPanel.setLayout(new BorderLayout());
+        displayDiscoveryPage(discoverPanel);
+        tabbedPane.addTab("Discover", discoverPanel);
+
         // Add a change listener to the tabbed pane
         tabbedPane.addChangeListener(e -> {
             int index = tabbedPane.getSelectedIndex();
-            if (index == 1) {
+            if (index == 0) {
                 displaySubscribedChatRooms(chatroomsPanel);
             } else {
                 displayDiscoveryPage(discoverPanel);
             }
         });
+
+        tabbedPane.setSelectedIndex(0);
 
         getContentPane().removeAll();
         add(tabbedPane);
@@ -113,7 +149,6 @@ public class Client extends JFrame {
 
     public void displayDiscoveryPage(JPanel panel) {
         setSize(500, 500);
-        setLocationRelativeTo(null);
 
         panel.removeAll();
 
@@ -135,7 +170,7 @@ public class Client extends JFrame {
         // Header panel with a header label and a "Refresh" button
         JLabel header = new JLabel("Discover Chat Rooms", SwingConstants.CENTER);
         JButton refreshButton = new JButton("Refresh");
-        refreshButton.addActionListener(e -> {
+        ActionListener refreshAction = e -> {
             // Add code here to process communication for chatroom discovery
             if (chatClientEndpoint == null) {
                 System.out.println("Chat client endpoint is null");
@@ -145,7 +180,11 @@ public class Client extends JFrame {
                     updateTable(tableModel);
                 });
             }
-        });
+        };
+        refreshButton.addActionListener(refreshAction);
+
+        Timer timer = new Timer(5000, refreshAction);
+        timer.start();
 
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.add(header, BorderLayout.CENTER);
@@ -169,7 +208,6 @@ public class Client extends JFrame {
 
     public void displaySubscribedChatRooms(JPanel panel) {
         setSize(500, 500);
-        setLocationRelativeTo(null);
         panel.removeAll();
 
         // Header panel with header label and a "+" button
@@ -190,7 +228,11 @@ public class Client extends JFrame {
                 if (dialog != null) {
                     dialog.dispose();
                 }
+
+                SwingUtilities.invokeLater(() -> displaySubscribedChatRooms(panel));
             });
+
+            chatRoomNameField.addActionListener(e1 -> createButton.doClick());
 
             JPanel formPanel = new JPanel();
             formPanel.add(chatRoomNameField);
@@ -201,7 +243,7 @@ public class Client extends JFrame {
             dialog.setTitle("Create a new chat room");
             dialog.setContentPane(formPanel);
             dialog.pack();
-            dialog.setLocationRelativeTo(null);
+            dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);
         });
 
@@ -254,7 +296,8 @@ public class Client extends JFrame {
 
     public void displayChatRoom(String chatRoomName) {
         setSize(500, 500);
-        setLocationRelativeTo(null);
+
+        this.currentChatRoom = chatRoomName;
 
         // Header panel with back button and header label
         JButton backButton = new JButton("\u2190");
@@ -265,8 +308,9 @@ public class Client extends JFrame {
         headerPanel.add(header, BorderLayout.CENTER);
 
         // Chat Room Panel
-        chatArea = new JTextArea();
+        chatArea = new JTextPane();
         chatArea.setEditable(false);
+        chatArea.setContentType("text/html");
         JScrollPane chatScrollPane = new JScrollPane(chatArea);
 
         // Footer Panel with text field and send button
@@ -277,6 +321,8 @@ public class Client extends JFrame {
             chatClientEndpoint.sendMessage(chatRoomName, username, message);
             messageField.setText("");
         });
+
+        messageField.addActionListener(e1 -> sendButton.doClick());
         JPanel footerPanel = new JPanel(new BorderLayout());
         footerPanel.add(messageField, BorderLayout.CENTER);
         footerPanel.add(sendButton, BorderLayout.EAST);
@@ -291,7 +337,9 @@ public class Client extends JFrame {
         // Get chatroom history
         chatClientEndpoint.getMessageHistory(chatRoomName, username, (String[] messages) -> {
             for (String message : messages) {
-                chatArea.append(message + "\n");
+                if (!message.isEmpty()) {
+                    displayMessage(message);
+                }
             }
         });
 
@@ -319,7 +367,84 @@ public class Client extends JFrame {
     }
 
     public void displayMessage(String message) {
-        chatArea.append(message + "\n");
+        // Extract the time and time zone from message that is in the format "[timestamp timezone]: username: message
+        String[] parts = message.split("[\\[\\]]", 3);
+        String tzandts = parts[1];
+        String[] parts2 = parts[2].split(":", 4);
+        String roomName = parts2[1].replace(" ", "");
+
+        if (!roomName.equals(this.currentChatRoom)) {
+            return;
+        }
+
+        String username = parts2[2].replace(" ", "");
+        if (username.equals(this.username)) {
+            username = "You";
+        }
+        String content = parts2[3].trim();
+
+        String[] timeParts = tzandts.split(" ", 3);
+        String timestamp = timeParts[0] + " " + timeParts[1];
+        String timezone = timeParts[2];
+
+        // Get clients time zone in GMT-00:00 format
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
+        String clientTimeZone = "GMT" + zdt.getOffset().toString();
+
+        // Server and client timezone are both in "GMT-00:00" format convert the timestamp to clients time zone
+        String clientTime = convertServerTimeToClientTime(timezone, clientTimeZone, timestamp);
+
+        // If the clientTime has a leading 0 remove it e.g. "01:46" -> "1:46"
+        if (clientTime.startsWith("0")) {
+            clientTime = clientTime.substring(1);
+        }
+
+        String alignment = (username.equals("You") || username.equals(this.username)) ? "right" : "left";
+        String htmlText = "<div style=\"text-align: " + alignment + "\">" + clientTime + " " + username + ": " + content + "</div>";
+
+        HTMLEditorKit kit = (HTMLEditorKit) chatArea.getEditorKit();
+        HTMLDocument doc = (HTMLDocument) chatArea.getDocument();
+
+        try {
+            kit.insertHTML(doc, doc.getLength(), htmlText, 0, 0, null);
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        chatArea.setCaretPosition(chatArea.getDocument().getLength());
+    }
+
+    /*
+    *
+    * Purpose: Convert the server time to the client time zone
+    *
+    * serverTz: The server time zone in "GMT-00:00" format
+    * clientTz: The client time zone in "GMT-00:00" format
+    * serverTime: The server time in "hh:mm a" format
+    * */
+    String convertServerTimeToClientTime(String serverTz, String clientTz, String serverTime) {
+        // Parse the server time zone and client time zone
+        ZoneId serverZoneId = ZoneId.of(serverTz.replace("GMT", "UTC"));
+        ZoneId clientZoneId = ZoneId.of(clientTz.replace("GMT", "UTC"));
+
+        // Parse the server time
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
+        LocalTime localServerTime = LocalTime.parse(serverTime, timeFormatter);
+
+        // Create a ZonedDateTime object for the server time
+        ZonedDateTime serverZonedDateTime = ZonedDateTime.of(
+                1970, 1, 1, localServerTime.getHour(), localServerTime.getMinute(), 0, 0, serverZoneId
+        );
+
+        // Convert to the client time zone
+        ZonedDateTime clientZonedDateTime = serverZonedDateTime.withZoneSameInstant(clientZoneId);
+
+        // Format the client time
+        String clientTime = clientZonedDateTime.format(timeFormatter);
+
+        return clientTime;
     }
 
     public static void main(String[] args) {
