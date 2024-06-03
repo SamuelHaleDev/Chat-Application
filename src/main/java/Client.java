@@ -10,6 +10,8 @@
 * Copyright (c) 2024 by Samuel Hale
 * */
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -20,6 +22,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.geom.RoundRectangle2D;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Instant;
@@ -43,9 +46,36 @@ public class Client extends JFrame {
     private String currentChatRoom;
 
     public Client() {
+        try {
+            // Set the look and feel to the system look and feel
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+            // Change the default colors
+            UIManager.put("Panel.background", Color.DARK_GRAY);
+            UIManager.put("Button.background", Color.LIGHT_GRAY);
+            UIManager.put("Button.foreground", Color.BLACK);
+            UIManager.put("Label.foreground", Color.WHITE);
+            UIManager.put("TextField.background", Color.LIGHT_GRAY);
+            UIManager.put("TextField.foreground", Color.BLACK);
+            UIManager.put("List.background", Color.LIGHT_GRAY);
+            UIManager.put("List.foreground", Color.BLACK);
+            UIManager.put("TabbedPane.background", Color.DARK_GRAY);
+            UIManager.put("TabbedPane.foreground", Color.WHITE);
+            UIManager.put("Table.background", Color.LIGHT_GRAY);
+            UIManager.put("Table.foreground", Color.BLACK);
+            UIManager.put("OptionPane.background", Color.DARK_GRAY);
+            UIManager.put("OptionPane.foreground", Color.WHITE);
+
+            // Update the UI of all components in the frame
+            SwingUtilities.updateComponentTreeUI(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         setTitle("WhatsChat");
+        setIconImage(new ImageIcon("images/WhatsChat_Logo.png").getImage());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(300, 200);
+        setSize(300, 500);
         setLocationRelativeTo(null);
 
         DefaultListModel<String> model = new DefaultListModel<>();
@@ -54,23 +84,6 @@ public class Client extends JFrame {
 
         // Initialize the username field and connect button
         usernameField = new JTextField(20);
-        usernameField.setText("Enter your username");
-        usernameField.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (usernameField.getText().equals("Enter your username")) {
-                    usernameField.setText("");
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (usernameField.getText().isEmpty()) {
-                    usernameField.setText("Enter your username");
-                }
-            }
-        });
-
         usernameField.addActionListener(e -> connect());
 
         JButton connectButton = new JButton("Connect");
@@ -80,12 +93,26 @@ public class Client extends JFrame {
 
         // Create a panel and add the username field and connect
             // button to it
-        JPanel panel = new JPanel();
+        JPanel panel = new JPanel(new FlowLayout());
+
+        JLabel label = new JLabel("Username", SwingConstants.CENTER);
+
+        // Set the font, foreground color, and alignment of the JLabel
+        label.setFont(new Font("Arial", Font.BOLD, 14));
+        label.setForeground(Color.WHITE);
+        label.setHorizontalAlignment(JLabel.LEFT);
+
+        panel.add(Box.createVerticalBox());
+        panel.add(label);
+        panel.add(Box.createVerticalBox());
         panel.add(usernameField);
+        panel.add(Box.createVerticalBox());
         panel.add(connectButton);
 
         // Add the panel to the frame
         add(panel);
+
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         setVisible(true);
 
