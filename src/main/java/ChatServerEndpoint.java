@@ -173,6 +173,7 @@ public class ChatServerEndpoint {
 
         // Split the message into three parts based on a ":" delimiter
         String[] parts = message.split(":", 3);
+        String roomName = parts[0];
         String sender = "You: ";
         String messageContent = parts[2];
 
@@ -185,7 +186,7 @@ public class ChatServerEndpoint {
         String processedMessage = sender + messageContent;
 
         // Return the message
-        return "MESSAGE " + formattedTime + ": " + processedMessage;
+        return "MESSAGE " + formattedTime + ": " + roomName + ": " + processedMessage;
     }
 
     private String processBChatMessage(String message, Session session) throws IOException {
@@ -204,7 +205,7 @@ public class ChatServerEndpoint {
 
         String formattedTime = "[" + formatter.format(zdt) + "]";
 
-        String processedMessage = "BMESSAGE " + formattedTime + ": " + sender + ": " + messageContent;
+        String processedMessage = "BMESSAGE " + formattedTime + ": " + chatRoomName + ": " + sender + ": " + messageContent;
 
         // Get the chatRoom
         ChatRoom chatRoom = chatRooms.get(chatRoomName);

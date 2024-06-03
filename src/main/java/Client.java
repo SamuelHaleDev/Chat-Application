@@ -40,6 +40,7 @@ public class Client extends JFrame {
     private JList<String> chatRoomList;
     private JTabbedPane tabbedPane;
     private JList<String> discoveryChatRooms;
+    private String currentChatRoom;
 
     public Client() {
         setTitle("WhatsChat");
@@ -296,6 +297,8 @@ public class Client extends JFrame {
     public void displayChatRoom(String chatRoomName) {
         setSize(500, 500);
 
+        this.currentChatRoom = chatRoomName;
+
         // Header panel with back button and header label
         JButton backButton = new JButton("\u2190");
         backButton.addActionListener(e -> initializeNavigationPanel());
@@ -367,12 +370,18 @@ public class Client extends JFrame {
         // Extract the time and time zone from message that is in the format "[timestamp timezone]: username: message
         String[] parts = message.split("[\\[\\]]", 3);
         String tzandts = parts[1];
-        String[] parts2 = parts[2].split(":", 3);
-        String username = parts2[1].replace(" ", "");
+        String[] parts2 = parts[2].split(":", 4);
+        String roomName = parts2[1].replace(" ", "");
+
+        if (!roomName.equals(this.currentChatRoom)) {
+            return;
+        }
+
+        String username = parts2[2].replace(" ", "");
         if (username.equals(this.username)) {
             username = "You";
         }
-        String content = parts2[2].trim();
+        String content = parts2[3].trim();
 
         String[] timeParts = tzandts.split(" ", 3);
         String timestamp = timeParts[0] + " " + timeParts[1];
