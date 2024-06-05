@@ -34,7 +34,7 @@ import java.time.format.DateTimeFormatter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Client extends JFrame {
+public class Client {
     private ChatClientEndpoint chatClientEndpoint;
     private static final Logger logger = LogManager.getLogger(Client.class);
     private static JTextField usernameField;
@@ -44,84 +44,16 @@ public class Client extends JFrame {
     private JTabbedPane tabbedPane;
     private JList<String> discoveryChatRooms;
     private String currentChatRoom;
-
+    
     public Client() {
-        try {
-            // Set the look and feel to the system look and feel
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-            // Change the default colors
-            UIManager.put("Panel.background", Color.DARK_GRAY);
-            UIManager.put("Button.background", Color.LIGHT_GRAY);
-            UIManager.put("Button.foreground", Color.BLACK);
-            UIManager.put("Label.foreground", Color.WHITE);
-            UIManager.put("TextField.background", Color.LIGHT_GRAY);
-            UIManager.put("TextField.foreground", Color.BLACK);
-            UIManager.put("List.background", Color.LIGHT_GRAY);
-            UIManager.put("List.foreground", Color.BLACK);
-            UIManager.put("TabbedPane.background", Color.DARK_GRAY);
-            UIManager.put("TabbedPane.foreground", Color.WHITE);
-            UIManager.put("Table.background", Color.LIGHT_GRAY);
-            UIManager.put("Table.foreground", Color.BLACK);
-            UIManager.put("OptionPane.background", Color.DARK_GRAY);
-            UIManager.put("OptionPane.foreground", Color.WHITE);
-
-            // Update the UI of all components in the frame
-            SwingUtilities.updateComponentTreeUI(this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        setTitle("WhatsChat");
-        setIconImage(new ImageIcon("images/WhatsChat_Logo.png").getImage());
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(300, 500);
-        setLocationRelativeTo(null);
-
-        DefaultListModel<String> model = new DefaultListModel<>();
-        chatRoomList = new JList<>(model);
-        discoveryChatRooms = new JList<>(new DefaultListModel<>());
-
-        // Initialize the username field and connect button
-        usernameField = new JTextField(20);
-        usernameField.addActionListener(e -> connect());
-
-        JButton connectButton = new JButton("Connect");
-
-        // Add an action listener to the connect button
-        connectButton.addActionListener(e -> connect());
-
-        // Create a panel and add the username field and connect
-            // button to it
-        JPanel panel = new JPanel(new FlowLayout());
-
-        JLabel label = new JLabel("Username", SwingConstants.CENTER);
-
-        // Set the font, foreground color, and alignment of the JLabel
-        label.setFont(new Font("Arial", Font.BOLD, 14));
-        label.setForeground(Color.WHITE);
-        label.setHorizontalAlignment(JLabel.LEFT);
-
-        panel.add(Box.createVerticalBox());
-        panel.add(label);
-        panel.add(Box.createVerticalBox());
-        panel.add(usernameField);
-        panel.add(Box.createVerticalBox());
-        panel.add(connectButton);
-
-        // Add the panel to the frame
-        add(panel);
-
-        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
-
-        setVisible(true);
-
-        connectButton.requestFocusInWindow();
+        SwingUtilities.invokeLater(() -> {
+            new UI(this).setVisible(true);
+        });
     }
 
-    public void connect() {
+    public void connect(String username) {
         // Get the username from the text field
-        username = usernameField.getText();
+        this.username = username;
 
         // Create a WebSocket container
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
@@ -136,7 +68,7 @@ public class Client extends JFrame {
             chatClientEndpoint = ChatClientEndpoint.getInstance();
 
             // Initialize the navigation panel
-            initializeNavigationPanel();
+            //initializeNavigationPanel();
 
         } catch (DeploymentException | IOException e) {
             logger.error("Error connecting to server: {}", e.getMessage());
@@ -168,14 +100,14 @@ public class Client extends JFrame {
 
         tabbedPane.setSelectedIndex(0);
 
-        getContentPane().removeAll();
-        add(tabbedPane);
-        revalidate();
-        repaint();
+        //getContentPane().removeAll();
+        //add(tabbedPane);
+        //revalidate();
+        //repaint();
     }
 
     public void displayDiscoveryPage(JPanel panel) {
-        setSize(500, 500);
+        //setSize(500, 500);
 
         panel.removeAll();
 
@@ -229,12 +161,12 @@ public class Client extends JFrame {
         });
 
 
-        revalidate();
-        repaint();
+        //revalidate();
+        //repaint();
     }
 
     public void displaySubscribedChatRooms(JPanel panel) {
-        setSize(500, 500);
+        //setSize(500, 500);
         panel.removeAll();
 
         // Header panel with header label and a "+" button
@@ -270,7 +202,7 @@ public class Client extends JFrame {
             dialog.setTitle("Create a new chat room");
             dialog.setContentPane(formPanel);
             dialog.pack();
-            dialog.setLocationRelativeTo(this);
+            //dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);
         });
 
@@ -302,8 +234,8 @@ public class Client extends JFrame {
         panel.add(headerPanel, BorderLayout.NORTH);
         panel.add(chatRoomScrollPane, BorderLayout.CENTER);
 
-        revalidate();
-        repaint();
+        //revalidate();
+        //repaint();
     }
 
     public void updateTable(DefaultTableModel tableModel) {
@@ -322,7 +254,7 @@ public class Client extends JFrame {
     }
 
     public void displayChatRoom(String chatRoomName) {
-        setSize(500, 500);
+        //setSize(500, 500);
 
         this.currentChatRoom = chatRoomName;
 
@@ -371,12 +303,12 @@ public class Client extends JFrame {
         });
 
         // Remove all components from the frame
-        getContentPane().removeAll();
+        //getContentPane().removeAll();
 
-        add(panel);
+        //add(panel);
 
-        revalidate();
-        repaint();
+        //revalidate();
+        //repaint();
     }
 
     public void addChatRoom(String chatRoomName) {
@@ -476,6 +408,6 @@ public class Client extends JFrame {
 
     public static void main(String[] args) {
         new Client();
-    }
+}
 
 }
