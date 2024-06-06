@@ -47,7 +47,7 @@ public class Client {
     
     public Client() {
         SwingUtilities.invokeLater(() -> {
-            new UI(this).setVisible(true);
+            new Authenticate(this).setVisible(true);
         });
     }
 
