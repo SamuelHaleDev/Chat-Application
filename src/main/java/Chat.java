@@ -1,5 +1,3 @@
-
-
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -27,91 +25,21 @@ public class Chat extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        bg = new javax.swing.JPanel();
-        navPane = new javax.swing.JPanel();
-        jToggleButton1 = new javax.swing.JToggleButton();
-        jToggleButton2 = new javax.swing.JToggleButton();
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        bg.setBackground(new java.awt.Color(255, 255, 255));
-        bg.setLayout(new java.awt.BorderLayout());
-
-        navPane.setBackground(new java.awt.Color(33, 104, 105));
-        navPane.setPreferredSize(new java.awt.Dimension(75, 793));
-        navPane.setLayout(new javax.swing.BoxLayout(navPane, javax.swing.BoxLayout.Y_AXIS));
-
-        jToggleButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ChatImages/Chat Bubble.png"))); // NOI18N
-        jToggleButton1.setBorderPainted(false);
-        jToggleButton1.setContentAreaFilled(false);
-        jToggleButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jToggleButton1.setFocusPainted(false);
-        jToggleButton1.setMaximumSize(new java.awt.Dimension(75, 75));
-        jToggleButton1.setMinimumSize(new java.awt.Dimension(75, 75));
-        jToggleButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                jToggleButton1MouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jToggleButton1MouseExited(evt);
-            }
-        });
-        navPane.add(jToggleButton1);
-
-        jToggleButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ChatImages/Search.png"))); // NOI18N
-        jToggleButton2.setBorderPainted(false);
-        jToggleButton2.setContentAreaFilled(false);
-        jToggleButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jToggleButton2.setFocusPainted(false);
-        jToggleButton2.setMaximumSize(new java.awt.Dimension(75, 75));
-        jToggleButton2.setMinimumSize(new java.awt.Dimension(75, 75));
-        jToggleButton2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                jToggleButton2MouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jToggleButton2MouseExited(evt);
-            }
-        });
-        navPane.add(jToggleButton2);
-
-        bg.add(navPane, java.awt.BorderLayout.LINE_START);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGap(0, 400, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGap(0, 300, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jToggleButton1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jToggleButton1MouseEntered
-        // TODO add your handling code here:
-        jToggleButton1.setBackground(java.awt.Color.decode("#FFF"));
-        jToggleButton1.setContentAreaFilled(true);
-    }//GEN-LAST:event_jToggleButton1MouseEntered
-
-    private void jToggleButton1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jToggleButton1MouseExited
-        // TODO add your handling code here:
-        jToggleButton1.setContentAreaFilled(false);
-    }//GEN-LAST:event_jToggleButton1MouseExited
-
-    private void jToggleButton2MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jToggleButton2MouseEntered
-        // TODO add your handling code here:
-        jToggleButton2.setBackground(java.awt.Color.decode("#FFF"));
-        jToggleButton2.setContentAreaFilled(true);
-    }//GEN-LAST:event_jToggleButton2MouseEntered
-
-    private void jToggleButton2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jToggleButton2MouseExited
-        // TODO add your handling code here:
-        jToggleButton2.setContentAreaFilled(false);
-    }//GEN-LAST:event_jToggleButton2MouseExited
 
     /**
      * @param args the command line arguments
@@ -149,9 +77,5 @@ public class Chat extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel bg;
-    private javax.swing.JToggleButton jToggleButton1;
-    private javax.swing.JToggleButton jToggleButton2;
-    private javax.swing.JPanel navPane;
     // End of variables declaration//GEN-END:variables
 }
